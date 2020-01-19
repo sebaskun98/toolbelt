@@ -1,10 +1,13 @@
+import { flags } from '@oclif/command'
 import chalk from 'chalk'
-import { router } from '../../clients'
-import { region } from '../../env'
-import { CommandError } from '../../errors'
-import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
-import log from '../../logger'
-import { appLatestMajor, parseArgs, pickLatestVersion, wildVersionByMajor } from './utils'
+
+import { router } from '../clients'
+import { region } from '../env'
+import { CommandError } from '../errors'
+import { CustomCommand } from '../lib/CustomCommand'
+import { ManifestEditor, ManifestValidator } from '../lib/manifest'
+import log from '../logger'
+import { appLatestMajor, pickLatestVersion, wildVersionByMajor } from '../modules/apps/utils'
 
 const unprefixName = (str: string) => {
   return str.split(':').pop()
@@ -55,18 +58,32 @@ const addApps = async (apps: string[], manifest: ManifestEditor) => {
   }
 }
 
-export default async (app: string, options) => {
-  const apps = [app, ...parseArgs(options._)]
-  const manifest = await ManifestEditor.getManifestEditor()
-  log.debug('Adding app' + (apps.length > 1 ? 's' : '') + `: ${apps.join(', ')}`)
-  try {
-    await addApps(apps, manifest)
-  } catch (err) {
-    if (err instanceof CommandError) {
-      log.error(err.message)
-      return
-    }
+export default class Add extends CustomCommand {
+  static description = 'Add app(s) to the manifest dependencies'
 
-    throw err
+  static examples = []
+
+  static flags = {
+    help: flags.help({ char: 'h' }),
+  }
+
+  static args = [{ name: 'appId', required: true }]
+
+  async run() {
+    const { args } = this.parse(Add)
+
+    const apps = [args.appId]
+    const manifest = await ManifestEditor.getManifestEditor()
+    log.debug('Adding app' + (apps.length > 1 ? 's' : '') + `: ${apps.join(', ')}`)
+    try {
+      await addApps(apps, manifest)
+    } catch (err) {
+      if (err instanceof CommandError) {
+        log.error(err.message)
+        return
+      }
+
+      throw err
+    }
   }
 }

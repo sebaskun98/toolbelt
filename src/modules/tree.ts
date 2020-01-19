@@ -1,9 +1,4 @@
 export default {
-  validate: {
-    description: 'DEPRECATED',
-    handler: './apps/validate',
-    optionalArgs: 'app',
-  },
   deploy: {
     description: 'Deploy a release of an app',
     handler: './apps/deploy',

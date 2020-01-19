@@ -1,9 +1,4 @@
 export default {
-  undeprecate: {
-    description: 'Undeprecate app(s)',
-    handler: './apps/undeprecate',
-    optionalArgs: 'app',
-  },
   deps: {
     list: {
       alias: 'ls',

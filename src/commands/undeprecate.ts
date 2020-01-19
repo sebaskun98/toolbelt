@@ -1,14 +1,16 @@
-import * as Bluebird from 'bluebird'
+import { flags } from '@oclif/command'
 import chalk from 'chalk'
-import { createClients } from '../../clients'
-import { getAccount, getToken, getWorkspace } from '../../conf'
-import { UserCancelledError } from '../../errors'
-import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
-import log from '../../logger'
-import switchAccount from '../auth/switch'
-import { promptConfirm } from '../prompts'
-import { parseLocator } from './../../locator'
-import { parseArgs, switchAccountMessage } from './utils'
+
+import { createClients } from '../clients'
+import { getAccount, getToken, getWorkspace } from '../conf'
+import { UserCancelledError } from '../errors'
+import { CustomCommand } from '../lib/CustomCommand'
+import { ManifestEditor, ManifestValidator } from '../lib/manifest'
+import { parseLocator } from '../locator'
+import log from '../logger'
+import { switchAccountMessage } from '../modules/apps/utils'
+import { switchAccount } from './switch'
+import { promptConfirm } from '../modules/prompts'
 
 let originalAccount
 let originalWorkspace
@@ -19,21 +21,21 @@ const switchToVendorMessage = (vendor: string): string => {
   )}?`
 }
 
-const promptUndeprecate = (appsList: string[]): Bluebird<boolean> =>
+const promptUndeprecate = (appsList: string[]) =>
   promptConfirm(
     `Are you sure you want to undeprecate app` +
       (appsList.length > 1 ? 's' : '') +
       ` ${chalk.green(appsList.join(', '))}?`
   )
 
-const promptUndeprecateOnVendor = (msg: string): Bluebird<boolean> => promptConfirm(msg)
+const promptUndeprecateOnVendor = (msg: string) => promptConfirm(msg)
 
 const switchToPreviousAccount = async (previousAccount: string, previousWorkspace: string) => {
   const currentAccount = getAccount()
   if (previousAccount !== currentAccount) {
     const canSwitchToPrevious = await promptUndeprecateOnVendor(switchAccountMessage(previousAccount, currentAccount))
     if (canSwitchToPrevious) {
-      await switchAccount(previousAccount, { workspace: previousWorkspace })
+      await switchAccount(previousAccount, previousWorkspace)
       return
     }
   }
@@ -48,7 +50,7 @@ const undeprecateApp = async (app: string): Promise<void> => {
     if (!canSwitchToVendor) {
       throw new UserCancelledError()
     }
-    await switchAccount(vendor, {})
+    await switchAccount(vendor, 'master')
   }
 
   const context = { account: vendor, workspace: 'master', authToken: getToken() }
@@ -78,15 +80,31 @@ const prepareUndeprecate = async (appsList: string[]): Promise<void> => {
   }
 }
 
-export default async (optionalApp: string, options) => {
-  const preConfirm = options.y || options.yes
-  originalAccount = getAccount()
-  originalWorkspace = getWorkspace()
-  const appsList = [optionalApp || (await ManifestEditor.getManifestEditor()).appLocator, ...parseArgs(options._)]
+export default class Undeprecate extends CustomCommand {
+  static description = 'Undeprecate app'
 
-  if (!preConfirm && !(await promptUndeprecate(appsList))) {
-    throw new UserCancelledError()
+  static examples = []
+
+  static flags = {
+    help: flags.help({ char: 'h' }),
+    yes: flags.boolean({ description: 'Confirm all prompts', char: 'y', default: false }),
   }
-  log.debug(`Undeprecating app ${appsList.length > 1 ? 's' : ''} : ${appsList.join(', ')}`)
-  return prepareUndeprecate(appsList)
+
+  static args = [{ name: 'appId', required: true }]
+
+  async run() {
+    const { args, flags } = this.parse(Undeprecate)
+    const preConfirm = flags.yes
+    const optionalApp = args.appId
+
+    originalAccount = getAccount()
+    originalWorkspace = getWorkspace()
+    const appsList = [optionalApp || (await ManifestEditor.getManifestEditor()).appLocator]
+
+    if (!preConfirm && !(await promptUndeprecate(appsList))) {
+      throw new UserCancelledError()
+    }
+    log.debug(`Undeprecating app ${appsList.length > 1 ? 's' : ''} : ${appsList.join(', ')}`)
+    return prepareUndeprecate(appsList)
+  }
 }

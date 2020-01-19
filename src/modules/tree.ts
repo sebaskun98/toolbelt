@@ -1,11 +1,4 @@
 export default {
-  config: {
-    set: {
-      description: 'Sets the current value for the given configuration',
-      handler: './config/set',
-      requiredArgs: ['name', 'value'],
-    },
-  },
   validate: {
     description: 'DEPRECATED',
     handler: './apps/validate',

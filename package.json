@@ -2,29 +2,6 @@
   "name": "vtex",
   "version": "2.86.1",
   "description": "The platform for e-commerce apps",
-  "main": "lib/index.js",
-  "bin": "lib/cli.js",
-  "scripts": {
-    "ts": "tsc",
-    "ts-watch": "tsc --watch",
-    "clean": "rimraf lib/",
-    "exe": "node scripts/make-executable.js",
-    "mkdir": "mkdirp lib/",
-    "build": "run-s clean ts exe",
-    "watch": "run-s clean mkdir exe ts-watch",
-    "lint": "tsc --noEmit && eslint src/**/*.ts",
-    "format": "prettier --config ./.prettierrc --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "test-jest": "jest --coverage",
-    "test": "run-s format lint build test-jest",
-    "test-watch": "run-p ts-watch test-jest",
-    "prepublish": "run-s clean test",
-    "prereleasy": "npm run prepublish",
-    "postreleasy": "npm publish"
-  },
-  "engineStrict": true,
-  "engines": {
-    "node": ">=10"
-  },
   "repository": {
     "type": "git",
     "url": "git://github.com/vtex/toolbelt.git"
@@ -44,7 +21,39 @@
   "bugs": {
     "url": "https://github.com/vtex/toolbelt/issues"
   },
+  "files": [
+    "/bin",
+    "/lib",
+    "/oclif.manifest.json"
+  ],
+  "main": "lib/index.js",
+  "bin": {
+    "cli": "./bin/run"
+  },
+  "engineStrict": true,
+  "engines": {
+    "node": ">=10"
+  },
+  "scripts": {
+    "watch": "nodemon",
+    "format": "prettier --config ./.prettierrc --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "eslint . --ext .ts --config .eslintrc",
+    "format-lint": "yarn format && yarn lint",
+    "build": "rm -rf lib && tsc && yarn oclif-dev manifest",
+    "docs": "yarn oclif-dev readme --spaceSep",
+    "postpack": "rm -f oclif.manifest.json",
+    "prepack": "rm -rf lib && tsc && yarn oclif-dev manifest && yarn docs",
+    "preversion": "yarn docs && git add README.md",
+    "test": "jest --passWithNoTests",
+    "ci:test": "yarn test --ci"
+  },
   "dependencies": {
+    "@oclif/command": "^1.0.0",
+    "@oclif/config": "^1.0.0",
+    "@oclif/plugin-help": "^2.2.3",
+    "@oclif/plugin-warn-if-update-available": "^1.7.0",
+    "@tiagonapoli/oclif-plugin-spaced-commands": "^0.0.2",
+    "tslib": "^1.0.0",
     "@vtex/api": "3.67.1",
     "@yarnpkg/lockfile": "^1.1.0",
     "ajv": "~6.10.2",
@@ -99,30 +108,53 @@
     "ws": "~7.2.0",
     "yarn": "~1.21.0"
   },
-  "preferGlobal": true,
   "devDependencies": {
     "@types/async-retry": "1.4.1",
     "@types/bluebird": "3.5.24",
     "@types/bluebird-global": "3.5.9",
     "@types/configstore": "2.1.1",
     "@types/fs-extra": "5.0.4",
-    "@types/jest": "24.0.23",
     "@types/jsonwebtoken": "8.3.5",
-    "@types/node": "10.12.12",
     "@types/node-notifier": "^5.4.0",
     "@types/ramda": "types/npm-ramda#dist",
     "@types/semver-diff": "2.1.1",
     "@types/tar": "4.0.3",
     "@types/yarnpkg__lockfile": "^1.1.3",
-    "eslint": "^6.7.2",
     "eslint-config-vtex": "^11.2.0",
-    "jest": "24.9.0",
     "longjohn": "0.2.12",
     "mkdirp": "0.5.1",
     "npm-run-all": "4.1.5",
-    "prettier": "^1.19.1",
     "rimraf": "2.6.1",
-    "ts-jest": "24.2.0",
-    "typescript": "^3.7.3"
+    "@tiagonapoli/oclif-dev-cli": "^0.0.4",
+    "@types/jest": "^24.0.25",
+    "@types/node": "^12.12.21",
+    "@typescript-eslint/eslint-plugin": "^2.3.0",
+    "@typescript-eslint/parser": "^2.12.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.2.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-lodash": "^6.0.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "jest": "^24.9.0",
+    "nodemon": "^2.0.2",
+    "nodemon-notifier-cli": "https://github.com/Slessi/nodemon-notifier-cli.git",
+    "prettier": "^1.19.1",
+    "ts-jest": "^24.2.0",
+    "ts-node": "^8.0.0",
+    "typescript": "^3.7.4"
+  },
+  "oclif": {
+    "commands": "./lib/commands",
+    "bin": "cli",
+    "plugins": [
+      "@oclif/plugin-help",
+      "@oclif/plugin-warn-if-update-available",
+      "@tiagonapoli/oclif-plugin-spaced-commands"
+    ],
+    "topics": {
+      "say": {
+        "description": "Commands to say something"
+      }
+    }
   }
 }

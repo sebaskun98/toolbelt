@@ -1,9 +1,4 @@
 export default {
-  deploy: {
-    description: 'Deploy a release of an app',
-    handler: './apps/deploy',
-    optionalArgs: 'app',
-  },
   deprecate: {
     description: 'Deprecate app(s)',
     handler: './apps/deprecate',

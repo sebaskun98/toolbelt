@@ -1,10 +1,5 @@
 export default {
   config: {
-    get: {
-      description: 'Gets the current value for the requested configuration',
-      handler: './config/get',
-      requiredArgs: 'name',
-    },
     set: {
       description: 'Sets the current value for the given configuration',
       handler: './config/set',

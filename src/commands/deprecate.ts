@@ -1,14 +1,16 @@
-import * as Bluebird from 'bluebird'
+import { flags } from '@oclif/command'
 import chalk from 'chalk'
-import { createClients } from '../../clients'
-import { getAccount, getToken, getWorkspace } from '../../conf'
-import { UserCancelledError } from '../../errors'
-import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
-import log from '../../logger'
-import switchAccount from '../auth/switch'
-import { promptConfirm } from '../prompts'
-import { parseLocator } from './../../locator'
-import { parseArgs, switchAccountMessage } from './utils'
+
+import { createClients } from '../clients'
+import { getAccount, getToken, getWorkspace } from '../conf'
+import { UserCancelledError } from '../errors'
+import { CustomCommand } from '../lib/CustomCommand'
+import { ManifestEditor, ManifestValidator } from '../lib/manifest'
+import { parseLocator } from '../locator'
+import log from '../logger'
+import { switchAccountMessage } from '../modules/apps/utils'
+import { promptConfirm } from '../modules/prompts'
+import { switchAccount } from './switch'
 
 let originalAccount
 let originalWorkspace
@@ -19,21 +21,21 @@ const switchToVendorMessage = (vendor: string): string => {
   )}?`
 }
 
-const promptDeprecate = (appsList: string[]): Bluebird<boolean> =>
+const promptDeprecate = (appsList: string[]) =>
   promptConfirm(
     `Are you sure you want to deprecate app` +
       (appsList.length > 1 ? 's' : '') +
       ` ${chalk.green(appsList.join(', '))}?`
   )
 
-const promptDeprecateOnVendor = (msg: string): Bluebird<boolean> => promptConfirm(msg)
+const promptDeprecateOnVendor = (msg: string) => promptConfirm(msg)
 
 const switchToPreviousAccount = async (previousAccount: string, previousWorkspace: string) => {
   const currentAccount = getAccount()
   if (previousAccount !== currentAccount) {
     const canSwitchToPrevious = await promptDeprecateOnVendor(switchAccountMessage(previousAccount, currentAccount))
     if (canSwitchToPrevious) {
-      return await switchAccount(previousAccount, { workspace: previousWorkspace })
+      return await switchAccount(previousAccount, previousWorkspace)
     }
   }
   return
@@ -47,7 +49,7 @@ const deprecateApp = async (app: string): Promise<void> => {
     if (!canSwitchToVendor) {
       throw new UserCancelledError()
     }
-    await switchAccount(vendor, {})
+    await switchAccount(vendor, 'master')
   }
   const context = { account: vendor, workspace: 'master', authToken: getToken() }
   const { registry } = createClients(context)
@@ -78,17 +80,32 @@ const prepareAndDeprecateApps = async (appsList: string[]): Promise<void> => {
   await switchToPreviousAccount(originalAccount, originalWorkspace)
 }
 
-export default async (optionalApp: string, options) => {
-  const preConfirm = options.y || options.yes
+export default class Deprecate extends CustomCommand {
+  static description = 'Deprecate an app'
 
-  originalAccount = getAccount()
-  originalWorkspace = getWorkspace()
-  const appsList = [optionalApp || (await ManifestEditor.getManifestEditor()).appLocator, ...parseArgs(options._)]
+  static examples = []
 
-  if (!preConfirm && !(await promptDeprecate(appsList))) {
-    throw new UserCancelledError()
+  static flags = {
+    help: flags.help({ char: 'h' }),
+    yes: flags.boolean({ description: 'Confirm all prompts', char: 'y', default: false }),
   }
 
-  log.debug('Deprecating app' + (appsList.length > 1 ? 's' : '') + `: ${appsList.join(', ')}`)
-  return prepareAndDeprecateApps(appsList)
+  static args = [{ name: 'appId', required: true }]
+
+  async run() {
+    const { args, flags } = this.parse(Deprecate)
+    const preConfirm = flags.yes
+    const optionalApp = args.appId
+
+    originalAccount = getAccount()
+    originalWorkspace = getWorkspace()
+    const appsList = [optionalApp || (await ManifestEditor.getManifestEditor()).appLocator]
+
+    if (!preConfirm && !(await promptDeprecate(appsList))) {
+      throw new UserCancelledError()
+    }
+
+    log.debug('Deprecating app' + (appsList.length > 1 ? 's' : '') + `: ${appsList.join(', ')}`)
+    return prepareAndDeprecateApps(appsList)
+  }
 }

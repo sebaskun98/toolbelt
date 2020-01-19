@@ -1,9 +1,4 @@
 export default {
-  deprecate: {
-    description: 'Deprecate app(s)',
-    handler: './apps/deprecate',
-    optionalArgs: 'app',
-  },
   undeprecate: {
     description: 'Undeprecate app(s)',
     handler: './apps/undeprecate',

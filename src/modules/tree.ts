@@ -1,34 +1,5 @@
 export default {
   handler: './',
-  link: {
-    description: 'Start a development session for this app',
-    handler: './apps/link',
-    options: [
-      {
-        description: 'Clean builder cache',
-        long: 'clean',
-        short: 'c',
-        type: 'boolean',
-      },
-      {
-        description: 'Do not add app dependencies to package.json and do not run Yarn',
-        long: 'setup',
-        short: 's',
-        type: 'boolean',
-      },
-      {
-        description: `Don't watch for file changes after initial link`,
-        long: 'no-watch',
-        type: 'boolean',
-      },
-      {
-        description: 'Allow links with Typescript errors',
-        long: 'unsafe',
-        short: 'u',
-        type: 'boolean',
-      },
-    ],
-  },
   list: {
     alias: 'ls',
     description: 'List your installed VTEX apps',

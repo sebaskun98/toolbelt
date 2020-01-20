@@ -1,28 +1,36 @@
-import * as retry from 'async-retry'
+import { flags } from '@oclif/command'
+import retry from 'async-retry'
 import chalk from 'chalk'
-import * as chokidar from 'chokidar'
-import * as debounce from 'debounce'
+import chokidar from 'chokidar'
+import debounce from 'debounce'
 import { readFileSync } from 'fs'
-import * as moment from 'moment'
+import moment from 'moment'
 import { join, resolve as resolvePath, sep } from 'path'
 import { concat, intersection, isEmpty, map, pipe, prop } from 'ramda'
 import { createInterface } from 'readline'
-import { createClients } from '../../clients'
-import { getAccount, getEnvironment, getWorkspace } from '../../conf'
-import { CommandError } from '../../errors'
-import { createPathToFileObject } from '../../lib/files/ProjectFilesManager'
-import { YarnFilesManager } from '../../lib/files/YarnFilesManager'
-import { ManifestEditor } from '../../lib/manifest'
-import { fixPinnedDependencies, PinnedDeps } from '../../lib/pinnedDependencies'
-import log from '../../logger'
-import { getAppRoot } from '../../manifest'
-import { listenBuild } from '../build'
-import { default as setup } from '../setup'
-import { formatNano, runYarnIfPathExists } from '../utils'
-import startDebuggerTunnel from './debugger'
-import { getIgnoredPaths, listLocalFiles } from './file'
-import { ChangeSizeLimitError, ChangeToSend, ProjectSizeLimitError, ProjectUploader } from './ProjectUploader'
-import { checkBuilderHubMessage, showBuilderHubMessage, validateAppAction } from './utils'
+
+import { createClients } from '../clients'
+import { getAccount, getEnvironment, getWorkspace } from '../conf'
+import { CommandError } from '../errors'
+import { CustomCommand } from '../lib/CustomCommand'
+import { createPathToFileObject } from '../lib/files/ProjectFilesManager'
+import { YarnFilesManager } from '../lib/files/YarnFilesManager'
+import { ManifestEditor } from '../lib/manifest'
+import { fixPinnedDependencies, PinnedDeps } from '../lib/pinnedDependencies'
+import log from '../logger'
+import { getAppRoot } from '../manifest'
+import startDebuggerTunnel from '../modules/apps/debugger'
+import { getIgnoredPaths, listLocalFiles } from '../modules/apps/file'
+import {
+  ChangeSizeLimitError,
+  ChangeToSend,
+  ProjectSizeLimitError,
+  ProjectUploader,
+} from '../modules/apps/ProjectUploader'
+import { checkBuilderHubMessage, showBuilderHubMessage, validateAppAction } from '../modules/apps/utils'
+import { listenBuild } from '../modules/build'
+import { formatNano, runYarnIfPathExists } from '../modules/utils'
+import { setup } from './setup'
 
 let nodeNotifier
 if (process.platform !== 'win32') {
@@ -212,121 +220,143 @@ const performInitialLink = async (
   await retry(linkApp, RETRY_OPTS_INITIAL_LINK)
 }
 
-export default async options => {
-  await validateAppAction('link')
-  const unsafe = !!(options.unsafe || options.u)
-  const manifest = await ManifestEditor.getManifestEditor()
-  await manifest.writeSchema()
+export default class Link extends CustomCommand {
+  static description = 'Start a development session for this app'
 
-  const builderHubMessage = await checkBuilderHubMessage('link')
-  if (!isEmpty(builderHubMessage)) {
-    await showBuilderHubMessage(builderHubMessage.message, builderHubMessage.prompt, manifest)
+  static examples = []
+
+  static flags = {
+    help: flags.help({ char: 'h' }),
+    clean: flags.boolean({ char: 'c', description: 'Clean builder cache', default: false }),
+    setup: flags.boolean({
+      char: 's',
+      description: 'Do not add app dependencies to package.json and do not run Yarn',
+      default: false,
+    }),
+    'no-watch': flags.boolean({ description: "Don't watch for file changes after initial link", default: false }),
+    unsafe: flags.boolean({ char: 'u', description: 'Allow links with Typescript errors', default: false }),
   }
 
-  const appId = manifest.appLocator
-  const context = { account: getAccount(), workspace: getWorkspace(), environment: getEnvironment() }
-  const { builder } = createClients(context, { timeout: 60000 })
-  const projectUploader = ProjectUploader.getProjectUploader(appId, builder)
+  static args = []
 
-  if (options.setup || options.s) {
-    await setup({ 'ignore-linked': false })
-  }
-  try {
-    const pinnedDeps: PinnedDeps = await builder.getPinnedDependencies()
-    await fixPinnedDependencies(pinnedDeps, buildersToRunLocalYarn, manifest.builders)
-  } catch (e) {
-    log.info('Failed to check for pinned dependencies')
-    log.debug(e)
-  }
-  // Always run yarn locally for some builders
-  map(runYarnIfPathExists, buildersToRunLocalYarn)
+  async run() {
+    const { flags } = this.parse(Link)
 
-  if (options.c || options.clean) {
-    log.info('Requesting to clean cache in builder.')
-    const { timeNano } = await builder.clean(appId)
-    log.info(`Cache cleaned successfully in ${formatNano(timeNano)}`)
-  }
+    await validateAppAction('link')
+    const unsafe = flags.unsafe
+    const manifest = await ManifestEditor.getManifestEditor()
+    await manifest.writeSchema()
 
-  const onError = {
-    build_failed: () => {
-      log.error(`App build failed. Waiting for changes...`)
-    },
-    initial_link_required: () => warnAndLinkFromStart(projectUploader, unsafe),
-  }
-
-  let debuggerStarted = false
-  const onBuild = async () => {
-    if (debuggerStarted) {
-      return
+    const builderHubMessage = await checkBuilderHubMessage('link')
+    if (!isEmpty(builderHubMessage)) {
+      await showBuilderHubMessage(builderHubMessage.message, builderHubMessage.prompt, manifest)
     }
-    const startDebugger = async () => {
-      const port = await startDebuggerTunnel(manifest)
-      if (!port) {
-        throw new Error('Failed to start debugger.')
-      }
-      return port
+
+    const appId = manifest.appLocator
+    const context = { account: getAccount(), workspace: getWorkspace(), environment: getEnvironment() }
+    const { builder } = createClients(context, { timeout: 60000 })
+    const projectUploader = ProjectUploader.getProjectUploader(appId, builder)
+
+    if (flags.setup) {
+      await setup(false)
     }
-    if (shouldStartDebugger(manifest)) {
-      try {
-        const debuggerPort = await retry(startDebugger, RETRY_OPTS_DEBUGGER)
-        debuggerStarted = true
-        log.info(
-          `Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue(
-            'chrome://inspect'
-          )} in Google Chrome to debug your running application.`
-        )
-      } catch (e) {
-        log.error(e.message)
-      }
+    try {
+      const pinnedDeps: PinnedDeps = await builder.getPinnedDependencies()
+      await fixPinnedDependencies(pinnedDeps, buildersToRunLocalYarn, manifest.builders)
+    } catch (e) {
+      log.info('Failed to check for pinned dependencies')
+      log.debug(e)
     }
-  }
+    // Always run yarn locally for some builders
+    map(runYarnIfPathExists, buildersToRunLocalYarn)
 
-  log.info(`Linking app ${appId}`)
-
-  let unlistenBuild
-  const extraData = { yarnFilesManager: null }
-  try {
-    const buildTrigger = performInitialLink.bind(this, projectUploader, extraData, unsafe)
-    const [subject] = appId.split('@')
-    if (options.watch === false) {
-      await listenBuild(subject, buildTrigger, { waitCompletion: true })
-      return
+    if (flags.clean) {
+      log.info('Requesting to clean cache in builder.')
+      const { timeNano } = await builder.clean(appId)
+      log.info(`Cache cleaned successfully in ${formatNano(timeNano)}`)
     }
-    unlistenBuild = await listenBuild(subject, buildTrigger, { waitCompletion: false, onBuild, onError }).then(
-      prop('unlisten')
-    )
-  } catch (e) {
-    if (e.response) {
-      const { data } = e.response
-      if (data.code === 'routing_error' && /app_not_found.*vtex\.builder\-hub/.test(data.message)) {
-        return log.error(
-          'Please install vtex.builder-hub in your account to enable app linking (vtex install vtex.builder-hub)'
-        )
-      }
 
-      if (data.code === 'link_on_production') {
-        throw new CommandError(
-          `Please use a dev workspace to link apps. Create one with (${chalk.blue(
-            'vtex use <workspace> -rp'
-          )}) to be able to link apps`
-        )
-      }
+    const onError = {
+      build_failed: () => {
+        log.error(`App build failed. Waiting for changes...`)
+      },
+      initial_link_required: () => warnAndLinkFromStart(projectUploader, unsafe),
+    }
 
-      if (data.code === 'bad_toolbelt_version') {
-        return log.error(`${data.message} To update just run ${chalk.bold.green('yarn global add vtex')}.`)
+    let debuggerStarted = false
+    const onBuild = async () => {
+      if (debuggerStarted) {
+        return
+      }
+      const startDebugger = async () => {
+        const port = await startDebuggerTunnel(manifest)
+        if (!port) {
+          throw new Error('Failed to start debugger.')
+        }
+        return port
+      }
+      if (shouldStartDebugger(manifest)) {
+        try {
+          const debuggerPort = await retry(startDebugger, RETRY_OPTS_DEBUGGER)
+          debuggerStarted = true
+          log.info(
+            `Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue(
+              'chrome://inspect'
+            )} in Google Chrome to debug your running application.`
+          )
+        } catch (e) {
+          log.error(e.message)
+        }
       }
     }
-    throw e
-  }
 
-  createInterface({ input: process.stdin, output: process.stdout }).on('SIGINT', () => {
-    if (unlistenBuild) {
-      unlistenBuild()
+    log.info(`Linking app ${appId}`)
+
+    let unlistenBuild
+    const extraData = { yarnFilesManager: null }
+    try {
+      const buildTrigger = performInitialLink.bind(this, projectUploader, extraData, unsafe)
+      const [subject] = appId.split('@')
+      if (flags['no-watch'] === false) {
+        await listenBuild(subject, buildTrigger, { waitCompletion: true })
+        return
+      }
+      unlistenBuild = await listenBuild(subject, buildTrigger, { waitCompletion: false, onBuild, onError }).then(
+        prop('unlisten')
+      )
+    } catch (e) {
+      if (e.response) {
+        const { data } = e.response
+        if (data.code === 'routing_error' && /app_not_found.*vtex\.builder\-hub/.test(data.message)) {
+          return log.error(
+            'Please install vtex.builder-hub in your account to enable app linking (vtex install vtex.builder-hub)'
+          )
+        }
+
+        if (data.code === 'link_on_production') {
+          throw new CommandError(
+            `Please use a dev workspace to link apps. Create one with (${chalk.blue(
+              'vtex use <workspace> -rp'
+            )}) to be able to link apps`
+          )
+        }
+
+        if (data.code === 'bad_toolbelt_version') {
+          return log.error(`${data.message} To update just run ${chalk.bold.green('yarn global add vtex')}.`)
+        }
+      }
+      throw e
     }
-    log.info('Your app is still in development mode.')
-    log.info(`You can unlink it with: 'vtex unlink ${appId}'`)
-    process.exit()
-  })
 
-  await watchAndSendChanges(appId, projectUploader, extraData, unsafe)
+    createInterface({ input: process.stdin, output: process.stdout }).on('SIGINT', () => {
+      if (unlistenBuild) {
+        unlistenBuild()
+      }
+      log.info('Your app is still in development mode.')
+      log.info(`You can unlink it with: 'vtex unlink ${appId}'`)
+      process.exit()
+    })
+
+    await watchAndSendChanges(appId, projectUploader, extraData, unsafe)
+  }
 }

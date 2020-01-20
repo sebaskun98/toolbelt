@@ -9,6 +9,13 @@ import { setupTypings } from '../modules/setup/setupTypings'
 const buildersToAddAdditionalPackages = ['react', 'node']
 const buildersToAddTypes = ['react', 'node']
 
+export const setup = async (ignoreLinked: boolean) => {
+  const manifest = await getManifest()
+  setupESLint(manifest, buildersToAddAdditionalPackages)
+  await setupTSConfig(manifest)
+  await setupTypings(manifest, ignoreLinked, buildersToAddTypes)
+} 
+
 export default class Setup extends CustomCommand {
   static description = 'Download react app typings, graphql app typings, lint config and tsconfig'
 
@@ -24,9 +31,6 @@ export default class Setup extends CustomCommand {
   async run() {
     const { flags } = this.parse(Setup)
     const ignoreLinked = flags['ignore-linked']
-    const manifest = await getManifest()
-    setupESLint(manifest, buildersToAddAdditionalPackages)
-    await setupTSConfig(manifest)
-    await setupTypings(manifest, ignoreLinked, buildersToAddTypes)
+    await setup(ignoreLinked)
   }
 }

@@ -1,9 +1,5 @@
 export default {
   handler: './',
-  promote: {
-    description: 'Promote this workspace to master',
-    handler: './workspace/promote',
-  },
   publish: {
     description: 'Publish the current app or a path containing an app',
     handler: './apps/publish',

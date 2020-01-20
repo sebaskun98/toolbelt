@@ -1,11 +1,5 @@
 export default {
   handler: './',
-  local: {
-    workspace: {
-      description: 'Show current workspace and copy it to clipboard',
-      handler: './local/workspace',
-    },
-  },
   login: {
     description: 'Log into a VTEX account',
     handler: './auth/login',

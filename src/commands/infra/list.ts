@@ -1,18 +1,19 @@
+import { flags } from '@oclif/command'
 import { AvailableServices, InstalledService } from '@vtex/api'
-import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
-import * as semver from 'semver'
+import semver from 'semver'
 
-import { createTable } from '../../table'
 import { router } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
+import { CustomCommand } from '../../lib/CustomCommand'
 import log from '../../logger'
-import { getLastStableAndPrerelease } from './utils'
+import { getLastStableAndPrerelease } from '../../modules/infra/utils'
+import { createTable } from '../../table'
 
 const [account, workspace] = [getAccount(), getWorkspace()]
 const { listAvailableServices, listInstalledServices, getAvailableVersions } = router
 
-const printAvailableServices = (): Bluebird<void> =>
+const printAvailableServices = () =>
   listAvailableServices()
     .then((availableRes: AvailableServices) => {
       const table = createTable({ head: ['Name', 'Last stable', 'Last prerelease'] })
@@ -27,7 +28,7 @@ const printAvailableServices = (): Bluebird<void> =>
       console.log(table.toString())
     })
 
-const printAvailableServiceVersions = (name: string, filter: string): Bluebird<void> =>
+const printAvailableServiceVersions = (name: string, filter: string) =>
   getAvailableVersions(name).then(({ versions }: InfraResourceVersions) => {
     const region = Object.keys(versions)[0]
     return versions[region]
@@ -46,7 +47,7 @@ const printAvailableServiceVersions = (name: string, filter: string): Bluebird<v
       })
   })
 
-const printInstalledServices = (): Bluebird<void> =>
+const printInstalledServices = () =>
   listInstalledServices()
     .then((installedRes: InstalledService[]) => {
       const table = createTable()
@@ -63,12 +64,28 @@ const printInstalledServices = (): Bluebird<void> =>
       console.log(table.toString())
     })
 
-export default (name: string, options) => {
-  const filter = options.f || options.filter
-  const available = options.a || options.available
-  return available
-    ? name
-      ? printAvailableServiceVersions(name, filter)
-      : printAvailableServices()
-    : printInstalledServices()
+export default class InfraList extends CustomCommand {
+  static description = 'List installed services'
+
+  static examples = []
+
+  static flags = {
+    help: flags.help({ char: 'h' }),
+    filter: flags.string({ char: 'f', description: 'Only list versions containing this word' }),
+    available: flags.boolean({ char: 'a', description: 'List services available to install' }),
+  }
+
+  static args = [{ name: 'name', required: false }]
+
+  async run() {
+    const { args, flags } = this.parse(InfraList)
+    const name = args.name
+    const filter = flags.filter
+    const available = flags.available
+    return available
+      ? name
+        ? printAvailableServiceVersions(name, filter)
+        : printAvailableServices()
+      : printInstalledServices()
+  }
 }

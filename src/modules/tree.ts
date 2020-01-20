@@ -1,26 +1,6 @@
 export default {
   handler: './',
   infra: {
-    list: {
-      alias: 'ls',
-      description: 'List installed services',
-      handler: './infra/list',
-      optionalArgs: 'name',
-      options: [
-        {
-          description: 'List services available to install',
-          long: 'available',
-          short: 'a',
-          type: 'bool',
-        },
-        {
-          description: 'Only list versions containing this word',
-          long: 'filter',
-          short: 'f',
-          type: 'string',
-        },
-      ],
-    },
     update: {
       description: 'Update all installed services',
       handler: './infra/update',

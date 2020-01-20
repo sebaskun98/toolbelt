@@ -6,13 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-- Rename `vtex settings` to `vtex settings get`
-
 ### Removed
 - `vtex browse` command
 - `vtex production` command
 - `vtex promote` command
+- `vtex settings` command topic
 
 ## [2.86.1] - 2020-01-24
 ### Fixed

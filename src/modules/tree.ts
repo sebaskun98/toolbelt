@@ -1,12 +1,5 @@
 export default {
   handler: './',
-  settings: {
-    unset: {
-      description: 'Unset a value',
-      handler: './apps/settings/unset',
-      requiredArgs: ['app', 'fields'],
-    },
-  },
   switch: {
     description: 'Switch to another VTEX account',
     handler: './auth/switch',

@@ -1,11 +1,14 @@
+import { flags } from '@oclif/command'
 import axios from 'axios'
 import chalk from 'chalk'
-import * as enquirer from 'enquirer'
-import * as jwt from 'jsonwebtoken'
+import enquirer from 'enquirer'
+import jwt from 'jsonwebtoken'
 import { prop } from 'ramda'
-import { getAccount, getToken, getWorkspace, saveAccount, saveToken, saveWorkspace } from '../../conf'
-import * as env from '../../env'
-import log from '../../logger'
+
+import { getAccount, getToken, getWorkspace, saveAccount, saveToken, saveWorkspace } from '../conf'
+import * as env from '../env'
+import log from '../logger'
+import { CustomCommand } from '../lib/CustomCommand'
 
 const getAvailableRoles = async (region: string, token: string, supportedAccount: string): Promise<string[]> => {
   const response = await axios.get(
@@ -63,32 +66,46 @@ const saveSupportCredentials = (account: string, token: string): void => {
   saveToken(token)
 }
 
-export default async (account: string) => {
-  if (!account) {
-    log.error(`Please specify the account that will receive support. type vtex --help for more information.`)
-    return
+export default class Support extends CustomCommand {
+  static description = 'Login as support into another VTEX account'
+
+  static examples = []
+
+  static flags = {
+    help: flags.help({ char: 'h' }),
   }
-  const actualToken = getToken()
-  const region = env.region()
-  try {
-    const roles = await getAvailableRoles(region, actualToken, account)
-    if (roles.length === 0) {
-      log.error('No support roles available for this account.')
+
+  static args = [{ name: 'account', required: true }]
+
+  async run() {
+    const { args } = this.parse(Support)
+    const account = args.account
+    if (!account) {
+      log.error(`Please specify the account that will receive support. type vtex --help for more information.`)
       return
     }
-    const role = await promptRoles(roles)
-    const newToken = await loginAsRole(region, actualToken, account, role)
-    assertToken(newToken)
-    saveSupportCredentials(account, newToken)
-    log.info(`Logged into ${chalk.blue(account)} with role ${role}!`)
-  } catch (err) {
-    if (err.message) {
-      log.error(err.message)
-      if (err.response && err.response.status === 404) {
-        log.info('Make sure vtex.support-authority is installed in your workspace.')
+    const actualToken = getToken()
+    const region = env.region()
+    try {
+      const roles = await getAvailableRoles(region, actualToken, account)
+      if (roles.length === 0) {
+        log.error('No support roles available for this account.')
+        return
       }
-      return
+      const role = await promptRoles(roles)
+      const newToken = await loginAsRole(region, actualToken, account, role)
+      assertToken(newToken)
+      saveSupportCredentials(account, newToken)
+      log.info(`Logged into ${chalk.blue(account)} with role ${role}!`)
+    } catch (err) {
+      if (err.message) {
+        log.error(err.message)
+        if (err.response && err.response.status === 404) {
+          log.info('Make sure vtex.support-authority is installed in your workspace.')
+        }
+        return
+      }
+      log.error(err)
     }
-    log.error(err)
   }
 }

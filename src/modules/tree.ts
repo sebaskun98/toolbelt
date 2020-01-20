@@ -1,11 +1,6 @@
 export default {
   handler: './',
   settings: {
-    set: {
-      description: 'Set a value',
-      handler: './apps/settings/set',
-      requiredArgs: ['app', 'fields', 'value'],
-    },
     unset: {
       description: 'Unset a value',
       handler: './apps/settings/unset',

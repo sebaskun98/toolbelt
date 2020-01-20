@@ -1,10 +1,6 @@
 export default {
   handler: './',
   local: {
-    account: {
-      description: 'Show current account and copy it to clipboard',
-      handler: './local/account',
-    },
     workspace: {
       description: 'Show current workspace and copy it to clipboard',
       handler: './local/workspace',

@@ -1,19 +1,5 @@
 export default {
   handler: './',
-  install: {
-    alias: 'i',
-    description: 'Install an app (defaults to the app in the current directory)',
-    handler: './apps/install',
-    options: [
-      {
-        description: 'Install app without checking for route conflicts',
-        long: 'force',
-        short: 'f',
-        type: 'boolean',
-      },
-    ],
-    optionalArgs: 'app',
-  },
   setup: {
     description: 'Download react app typings, graphql app typings, lint config and tsconfig',
     handler: './setup',

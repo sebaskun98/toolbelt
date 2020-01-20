@@ -1,11 +1,14 @@
+import { flags } from '@oclif/command'
 import chalk from 'chalk'
 import { compose, equals, head, path } from 'ramda'
-import { apps, billing } from '../../clients'
-import { UserCancelledError } from '../../errors'
-import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
-import log from '../../logger'
-import { promptConfirm } from '../prompts'
-import { optionsFormatter, parseArgs, validateAppAction } from './utils'
+
+import { apps, billing } from '../clients'
+import { UserCancelledError } from '../errors'
+import { CustomCommand } from '../lib/CustomCommand'
+import { ManifestValidator } from '../lib/manifest'
+import log from '../logger'
+import { optionsFormatter, validateAppAction } from '../modules/apps/utils'
+import { promptConfirm } from '../modules/prompts'
 
 const { installApp } = billing
 const { installApp: legacyInstallApp } = apps
@@ -105,11 +108,30 @@ const logGraphQLErrorMessage = e => {
   log.error(e.message)
 }
 
-export default async (optionalApp: string, options) => {
-  const force = options.f || options.force
-  await validateAppAction('install', optionalApp)
-  const app = optionalApp || (await ManifestEditor.getManifestEditor()).appLocator
-  const appsList = [app, ...parseArgs(options._)]
-  log.debug('Installing app' + (appsList.length > 1 ? 's' : '') + `: ${appsList.join(', ')}`)
-  return prepareInstall(appsList, force)
+export default class Install extends CustomCommand {
+  static description = 'Install an app (defaults to the app in the current directory)'
+
+  static examples = []
+
+  static flags = {
+    help: flags.help({ char: 'h' }),
+    force: flags.boolean({
+      char: 'f',
+      description: 'Install app without checking for route conflicts',
+      default: false,
+    }),
+  }
+
+  static args = [{ name: 'appId', required: true }]
+
+  async run() {
+    const { args, flags } = this.parse(Install)
+
+    const force = flags.force
+    const app = args.appId
+    await validateAppAction('install', app)
+    const appsList = [app]
+    log.debug('Installing app' + (appsList.length > 1 ? 's' : '') + `: ${appsList.join(', ')}`)
+    return prepareInstall(appsList, force)
+  }
 }

@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+- `vtex browse` command
+- `vtex production` command
+
 ## [2.86.1] - 2020-01-24
 ### Fixed
 - [vtex link] Fix relink not properly updating active link

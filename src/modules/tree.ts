@@ -1,9 +1,5 @@
 export default {
   handler: './',
-  init: {
-    description: 'Create basic files and folders for your VTEX app',
-    handler: './init',
-  },
   install: {
     alias: 'i',
     description: 'Install an app (defaults to the app in the current directory)',

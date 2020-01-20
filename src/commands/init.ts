@@ -1,12 +1,13 @@
+import { flags } from '@oclif/command'
 import chalk from 'chalk'
 import * as enquirer from 'enquirer'
 import { keys, prop, reject, test } from 'ramda'
 
-import { getLogin } from '../../conf'
-import log from '../../logger'
-import { promptConfirm } from '../prompts'
-
-import * as git from './git'
+import { getLogin } from '../conf'
+import { CustomCommand } from '../lib/CustomCommand'
+import log from '../logger'
+import * as git from '../modules/init/git'
+import { promptConfirm } from '../modules/prompts'
 
 const VTEXInternalTemplates = [
   // Only show these templates for VTEX e-mail users.
@@ -61,17 +62,31 @@ const promptContinue = async (repoName: string) => {
   }
 }
 
-export default async () => {
-  log.debug('Prompting for app info')
-  log.info('Hello! I will help you generate basic files and folders for your app.')
-  try {
-    const repo = templates[await promptTemplates()]
-    await promptContinue(repo)
-    log.info(`Cloning https://vtex-apps/${repo}.git`)
-    await git.clone(repo)
-    log.info(`Run ${chalk.bold.green(`cd ${repo}`)} and ${chalk.bold.green('vtex link')} to start developing!`)
-  } catch (err) {
-    log.error(err.message)
-    log.debug(err)
+export default class Init extends CustomCommand {
+  static description = 'Create basic files and folders for your VTEX app'
+
+  static examples = []
+
+  static flags = {
+    help: flags.help({ char: 'h' }),
+  }
+
+  static args = []
+
+  async run() {
+    this.parse(Init)
+
+    log.debug('Prompting for app info')
+    log.info('Hello! I will help you generate basic files and folders for your app.')
+    try {
+      const repo = templates[await promptTemplates()]
+      await promptContinue(repo)
+      log.info(`Cloning https://vtex-apps/${repo}.git`)
+      await git.clone(repo)
+      log.info(`Run ${chalk.bold.green(`cd ${repo}`)} and ${chalk.bold.green('vtex link')} to start developing!`)
+    } catch (err) {
+      log.error(err.message)
+      log.debug(err)
+    }
   }
 }

@@ -1,23 +1,5 @@
 export default {
   handler: './',
-  login: {
-    description: 'Log into a VTEX account',
-    handler: './auth/login',
-    options: [
-      {
-        description: 'Specify login account',
-        long: 'account',
-        short: 'a',
-        type: 'string',
-      },
-      {
-        description: 'Specify login workspace',
-        long: 'workspace',
-        short: 'w',
-        type: 'string',
-      },
-    ],
-  },
   support: {
     description: 'Login as support into another VTEX account',
     handler: './support/login',

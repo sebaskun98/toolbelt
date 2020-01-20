@@ -1,19 +1,21 @@
-import axios from 'axios'
-import * as Bluebird from 'bluebird'
-import chalk from 'chalk'
-import * as childProcess from 'child_process'
-import * as enquirer from 'enquirer'
-import * as jwt from 'jsonwebtoken'
-import * as opn from 'opn'
 import { join } from 'path'
-import { prop } from 'ramda'
-import * as randomstring from 'randomstring'
+import childProcess from 'child_process'
 
-import * as conf from '../../conf'
-import { clusterIdDomainInfix, publicEndpoint } from '../../env'
-import log from '../../logger'
-import { onAuth } from '../../sse'
-import { promptConfirm } from '../prompts'
+import { flags } from '@oclif/command'
+import axios from 'axios'
+import chalk from 'chalk'
+import enquirer from 'enquirer'
+import jwt from 'jsonwebtoken'
+import opn from 'opn'
+import { prop } from 'ramda'
+import randomstring from 'randomstring'
+
+import { clusterIdDomainInfix, publicEndpoint } from '../env'
+import { onAuth } from '../sse'
+import * as conf from '../conf'
+import { CustomCommand } from '../lib/CustomCommand'
+import log from '../logger'
+import { promptConfirm } from '../modules/prompts'
 
 const [cachedAccount, cachedLogin, cachedWorkspace] = [conf.getAccount(), conf.getLogin(), conf.getWorkspace()]
 const details =
@@ -56,8 +58,7 @@ const startUserAuth = async (account: string, workspace: string): Promise<string
   return onAuth(account, workspace, state, fullReturnUrl)
 }
 
-const promptUsePrevious = (): Bluebird<boolean> =>
-  promptConfirm(`Do you want to use the previous login details? (${details})`)
+const promptUsePrevious = () => promptConfirm(`Do you want to use the previous login details? (${details})`)
 
 const promptAccount = async promptPreviousAcc => {
   if (promptPreviousAcc) {
@@ -103,7 +104,7 @@ const authAndSave = async (
 
 const closeChromeTabIfMac = (returnUrl: string) => {
   if (process.platform === 'darwin') {
-    const cp = childProcess.spawn('osascript', [join(__dirname, '../../../scripts/closeChrome.scpt'), returnUrl], {
+    const cp = childProcess.spawn('osascript', [join(__dirname, '../../scripts/closeChrome.scpt'), returnUrl], {
       stdio: 'ignore',
       detached: true,
     })
@@ -111,10 +112,10 @@ const closeChromeTabIfMac = (returnUrl: string) => {
   }
 }
 
-export default async options => {
-  const defaultArgumentAccount = options && options._ && options._[0]
-  const optionAccount = options ? options.a || options.account || defaultArgumentAccount : null
-  const optionWorkspace = options ? options.w || options.workspace : null
+export const doLogin = async (args, flags) => {
+  const defaultArgumentAccount = args.account
+  const optionAccount = flags.account || defaultArgumentAccount
+  const optionWorkspace = flags.workspace
   const usePrevious = !(optionAccount || optionWorkspace) && details && (await promptUsePrevious())
   const account =
     optionAccount || (usePrevious && cachedAccount) || (await promptAccount(cachedAccount && optionWorkspace))
@@ -130,5 +131,24 @@ export default async options => {
     } else {
       throw err
     }
+  }
+}
+
+export default class Login extends CustomCommand {
+  static description = 'Log into a VTEX account'
+
+  static examples = []
+
+  static flags = {
+    help: flags.help({ char: 'h' }),
+    account: flags.string({ char: 'a', description: 'Specify login account' }),
+    workspace: flags.string({ char: 'w', description: 'Specify login workspace' }),
+  }
+
+  static args = [{ name: 'account', required: false }]
+
+  async run() {
+    const { args, flags } = this.parse(Login)
+    await doLogin(args, flags)
   }
 }

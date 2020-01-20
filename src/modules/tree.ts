@@ -1,17 +1,5 @@
 export default {
   handler: './',
-  logout: {
-    description: 'Logout of the current VTEX account',
-    handler: './auth/logout',
-  },
-  options: [
-    {
-      description: 'show help information',
-      long: 'help',
-      short: 'h',
-      type: 'boolean',
-    },
-  ],
   production: {
     description: "Set this workspace's production mode to true or false (deprecated)",
     handler: './workspace/production',

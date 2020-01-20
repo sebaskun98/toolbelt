@@ -1,12 +1,6 @@
 export default {
   handler: './',
   infra: {
-    install: {
-      alias: 'i',
-      description: 'Install a service',
-      handler: './infra/install',
-      requiredArgs: 'name',
-    },
     list: {
       alias: 'ls',
       description: 'List installed services',

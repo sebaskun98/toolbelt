@@ -1,18 +1,17 @@
-import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
-import * as ora from 'ora'
+import ora from 'ora'
 import { curry, path } from 'ramda'
-import * as semver from 'semver'
-
+import semver from 'semver'
 import { router } from '../../clients'
 import { Region } from '../../conf'
 import log from '../../logger'
-import { promptConfirm } from '../prompts'
-import { diffVersions, getTag } from './utils'
+import { CustomCommand } from '../../lib/CustomCommand'
+import { promptConfirm } from '../../modules/prompts'
+import { diffVersions, getTag } from '../../modules/infra/utils'
 
 const { getAvailableVersions, listInstalledServices, installService } = router
 
-const promptInstall = (): Bluebird<boolean> => Promise.resolve(promptConfirm('Continue with the installation?'))
+const promptInstall = () => Promise.resolve(promptConfirm('Continue with the installation?'))
 
 const findVersion = (pool: string[], predicate: (version: string) => boolean): string =>
   pool
@@ -68,27 +67,43 @@ const logInstall = curry<string, [string, string], void>(
 const hasNewVersion = ([installedVersion, newVersion]: [string, string]): boolean =>
   !!(newVersion && newVersion !== installedVersion)
 
-const getInstalledVersion = (service: string): Bluebird<string> =>
+const getInstalledVersion = (service: string) =>
   listInstalledServices()
     .then(data => data.find(({ name }) => name === service))
     .then(s => s && s.version)
 
-export default (name: string) => {
-  const [service, suffix] = name.split('@')
-  const spinner = ora('Getting versions').start()
-  // We force getting versions from the Production region as currently all
-  // regions use the same ECR on us-east-1 region. This API is old and weird,
-  // as it shouldn't return the regions in the response if I'm already querying
-  // a single region. Only change to use `env.region()` when router fixed.
-  return Promise.all([
-    getInstalledVersion(service),
-    getAvailableVersions(service).then(path(['versions', Region.Production])),
-  ])
-    .tap(() => spinner.stop())
-    .spread(getNewVersion(suffix))
-    .tap(logInstall(service))
-    .then((versions: [string, string]) => {
-      return hasNewVersion(versions)
+export default class InfraInstall extends CustomCommand {
+  static description = 'Install a service'
+
+  static examples = []
+
+  static flags = {}
+
+  static args = [{ name: 'serviceId', required: true }]
+
+  async run() {
+    const { args } = this.parse(InfraInstall)
+    const name = args.serviceId
+
+    const [service, suffix] = name.split('@')
+    const spinner = ora('Getting versions').start()
+
+    try {
+      // We force getting versions from the Production region as currently all
+      // regions use the same ECR on us-east-1 region. This API is old and weird,
+      // as it shouldn't return the regions in the response if I'm already querying
+      // a single region. Only change to use `env.1()` when router fixed.
+      const a = await Promise.all([
+        getInstalledVersion(service),
+        getAvailableVersions(service).then(path(['versions', Region.Production])),
+      ])
+
+      spinner.stop()
+      // @ts-ignore
+      const versions: [string, string] = getNewVersion(suffix)(...a)
+      logInstall(service)
+
+      hasNewVersion(versions)
         ? Promise.resolve(console.log(''))
             .then(promptInstall)
             .then(confirm => {
@@ -104,9 +119,9 @@ export default (name: string) => {
               log.info('Installation complete')
             })
         : null
-    })
-    .catch(err => {
+    } catch (err) {
       spinner.stop()
       throw err
-    })
+    }
+  }
 }

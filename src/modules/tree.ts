@@ -1,36 +1,5 @@
 export default {
   handler: './',
-  publish: {
-    description: 'Publish the current app or a path containing an app',
-    handler: './apps/publish',
-    optionalArgs: 'path',
-    options: [
-      {
-        description: 'Apply a tag to the release',
-        long: 'tag',
-        short: 't',
-        type: 'string',
-      },
-      {
-        description: 'Specify the workspace for the app registry',
-        long: 'workspace',
-        short: 'w',
-        type: 'string',
-      },
-      {
-        description: 'Publish app without checking if the sem ver is being respected',
-        long: 'force',
-        short: 'f',
-        type: 'boolean',
-      },
-      {
-        description: 'Answer yes to confirmation prompts',
-        long: 'yes',
-        short: 'y',
-        type: 'boolean',
-      },
-    ],
-  },
   settings: {
     description: 'Get app settings',
     handler: './apps/settings',

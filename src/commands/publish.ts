@@ -1,23 +1,26 @@
+import { flags } from '@oclif/command'
 import { BuildResult } from '@vtex/api'
-import * as retry from 'async-retry'
+import retry from 'async-retry'
 import chalk from 'chalk'
-import * as ora from 'ora'
+import ora from 'ora'
 import { isEmpty, map } from 'ramda'
-import * as conf from '../../conf'
-import { region } from '../../env'
-import { UserCancelledError } from '../../errors'
-import { createPathToFileObject } from '../../lib/files/ProjectFilesManager'
-import { ManifestEditor } from '../../lib/manifest'
-import { toAppLocator } from '../../locator'
-import log from '../../logger'
-import { getAppRoot } from '../../manifest'
-import switchAccount from '../auth/switch'
-import { listenBuild } from '../build'
-import { promptConfirm } from '../prompts'
-import { runYarnIfPathExists, switchToPreviousAccount } from '../utils'
-import { listLocalFiles } from './file'
-import { ProjectUploader } from './ProjectUploader'
-import { checkBuilderHubMessage, showBuilderHubMessage } from './utils'
+
+import * as conf from '../conf'
+import { region } from '../env'
+import { UserCancelledError } from '../errors'
+import { CustomCommand } from '../lib/CustomCommand'
+import { createPathToFileObject } from '../lib/files/ProjectFilesManager'
+import { ManifestEditor } from '../lib/manifest'
+import { toAppLocator } from '../locator'
+import log from '../logger'
+import { getAppRoot } from '../manifest'
+import { listLocalFiles } from '../modules/apps/file'
+import { ProjectUploader } from '../modules/apps/ProjectUploader'
+import { checkBuilderHubMessage, showBuilderHubMessage } from '../modules/apps/utils'
+import { listenBuild } from '../modules/build'
+import { promptConfirm } from '../modules/prompts'
+import { runYarnIfPathExists, switchToPreviousAccount } from '../modules/utils'
+import { switchAccount } from './switch'
 
 const root = getAppRoot()
 const buildersToRunLocalYarn = ['node', 'react']
@@ -86,7 +89,7 @@ const publisher = (workspace = 'master') => {
       if (!canSwitchToVendor) {
         throw new UserCancelledError()
       }
-      await switchAccount(manifest.vendor, {})
+      await switchAccount(manifest.vendor, 'master')
     }
 
     const pubTag = tag || automaticTag(manifest.version)
@@ -123,48 +126,66 @@ const publisher = (workspace = 'master') => {
   return { publishApp, publishApps }
 }
 
-export default async (path: string, options) => {
-  log.debug(`Starting to publish app in ${conf.getEnvironment()}`)
+export default class Publish extends CustomCommand {
+  static description = 'Publish the current app or a path containing an app'
 
-  const manifest = await ManifestEditor.getManifestEditor()
-  const versionMsg = chalk.bold.yellow(manifest.version)
-  const appNameMsg = chalk.bold.yellow(`${manifest.vendor}.${manifest.name}`)
+  static examples = []
 
-  const yesFlag = options.y || options.yes
+  static flags = {
+    help: flags.help({ char: 'h' }),
+    tag: flags.string({ char: 't', description: 'Apply a tag to the release' }),
+    workspace: flags.string({ char: 'w', description: 'Specify the workspace for the app registry' }),
+    force: flags.boolean({ char: 'f', description: 'Publish app without checking if the semver is being respected' }),
+    yes: flags.boolean({ char: 'y', description: 'Answer yes to confirmation prompts' }),
+  }
 
-  if (!yesFlag) {
-    const confirmVersion = await promptConfirm(
-      `Are you sure that you want to release version ${chalk.bold(`${versionMsg} of ${appNameMsg}?`)}`,
-      false
-    )
+  static args = [{ name: 'path', required: false }]
 
-    if (!confirmVersion) {
+  async run() {
+    const { args, flags } = this.parse(Publish)
+
+    log.debug(`Starting to publish app in ${conf.getEnvironment()}`)
+
+    const manifest = await ManifestEditor.getManifestEditor()
+    const versionMsg = chalk.bold.yellow(manifest.version)
+    const appNameMsg = chalk.bold.yellow(`${manifest.vendor}.${manifest.name}`)
+
+    const yesFlag = flags.yes
+
+    if (!yesFlag) {
+      const confirmVersion = await promptConfirm(
+        `Are you sure that you want to release version ${chalk.bold(`${versionMsg} of ${appNameMsg}?`)}`,
+        false
+      )
+
+      if (!confirmVersion) {
+        process.exit(1)
+      }
+
+      const response = await promptConfirm(
+        chalk.yellow.bold(
+          `Starting January 2, 2020, the 'vtex publish' command will change its behavior and more steps will be added to the publishing process. Read more about this change on the following link:\nhttp://bit.ly/2ZIJucc\nAcknowledged?`
+        ),
+        false
+      )
+      if (!response) {
+        process.exit(1)
+      }
+    }
+
+    if (yesFlag && manifest.vendor !== conf.getAccount()) {
+      log.error(`When using the 'yes' flag, you need to be logged in to the same account as your app’s vendor.`)
       process.exit(1)
     }
 
-    const response = await promptConfirm(
-      chalk.yellow.bold(
-        `Starting January 2, 2020, the 'vtex publish' command will change its behavior and more steps will be added to the publishing process. Read more about this change on the following link:\nhttp://bit.ly/2ZIJucc\nAcknowledged?`
-      ),
-      false
-    )
-    if (!response) {
-      process.exit(1)
-    }
+    const path = args.path || root
+    const workspace = flags.workspace
+    const force = flags.force
+
+    // Always run yarn locally for some builders
+    map(runYarnIfPathExists, buildersToRunLocalYarn)
+
+    const { publishApps } = publisher(workspace)
+    await publishApps(path, flags.tag, force)
   }
-
-  if (yesFlag && manifest.vendor !== conf.getAccount()) {
-    log.error(`When using the 'yes' flag, you need to be logged in to the same account as your app’s vendor.`)
-    process.exit(1)
-  }
-
-  path = path || root
-  const workspace = options.w || options.workspace
-  const force = options.f || options.force
-
-  // Always run yarn locally for some builders
-  map(runYarnIfPathExists, buildersToRunLocalYarn)
-
-  const { publishApps } = publisher(workspace)
-  await publishApps(path, options.tag, force)
 }

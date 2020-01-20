@@ -9,10 +9,6 @@ export default {
       description: 'Show current workspace and copy it to clipboard',
       handler: './local/workspace',
     },
-    token: {
-      description: "Show user's auth token and copy it to clipboard",
-      handler: './local/token',
-    },
   },
   login: {
     description: 'Log into a VTEX account',

@@ -1,16 +1,4 @@
 export default {
-  deps: {
-    update: {
-      description: 'Update all workspace dependencies or a specific app@version',
-      handler: './deps/update',
-      optionalArgs: ['app'],
-    },
-    diff: {
-      description: 'Diff between workspace dependencies',
-      handler: './deps/diff',
-      optionalArgs: ['workspace1', 'workspace2'],
-    },
-  },
   handler: './',
   infra: {
     install: {

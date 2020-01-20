@@ -1,11 +1,5 @@
 export default {
   handler: './',
-  infra: {
-    update: {
-      description: 'Update all installed services',
-      handler: './infra/update',
-    },
-  },
   init: {
     description: 'Create basic files and folders for your VTEX app',
     handler: './init',

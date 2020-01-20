@@ -1,19 +1,20 @@
+import { flags } from '@oclif/command'
 import { AvailableServices, InstalledService } from '@vtex/api'
-import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
-import * as ora from 'ora'
-import * as pad from 'pad'
-import * as semver from 'semver'
+import ora from 'ora'
+import pad from 'pad'
+import semver from 'semver'
 
 import { router } from '../../clients'
 import { Region } from '../../conf'
+import { CustomCommand } from '../../lib/CustomCommand'
 import log from '../../logger'
-import { promptConfirm } from '../prompts'
-import { diffVersions, getTag } from './utils'
+import { diffVersions, getTag } from '../../modules/infra/utils'
+import { promptConfirm } from '../../modules/prompts'
 
 const { listAvailableServices, listInstalledServices, installService } = router
 
-const promptUpdate = (): Bluebird<boolean> => Promise.resolve(promptConfirm('Apply version updates?'))
+const promptUpdate = () => Promise.resolve(promptConfirm('Apply version updates?'))
 
 const calculateColSize = (names: string[]): number => Math.max(...names.map(n => n.length))
 
@@ -55,18 +56,32 @@ const createVersionMap = (availableRes: AvailableServices, installedRes: Install
 
 const hasUpdate = (update: InfraUpdate): boolean => Object.keys(update).length > 0
 
-const installUpdates = (update: InfraUpdate): Bluebird<void[]> =>
-  Bluebird.all(Object.keys(update).map(name => installService(name, update[name].latest)))
+const installUpdates = (update: InfraUpdate) =>
+  Promise.all(Object.keys(update).map(name => installService(name, update[name].latest)))
 
-export default () => {
-  const spinner = ora('Getting available updates').start()
-  return Promise.all([listAvailableServices(), listInstalledServices()])
-    .tap(() => spinner.stop())
-    .spread(createVersionMap)
-    .tap(logVersionMap)
-    .then(({ update }) => {
+export default class InfraUpdateCommand extends CustomCommand {
+  static description = 'Update all installed services'
+
+  static examples = []
+
+  static flags = {
+    help: flags.help({ char: 'h' }),
+  }
+
+  static args = []
+
+  async run() {
+    this.parse(InfraUpdateCommand)
+
+    const spinner = ora('Getting available updates').start()
+    try {
+      const versions = await Promise.all([listAvailableServices(), listInstalledServices()])
+      spinner.stop()
+      const versionMap = createVersionMap(...versions)
+      logVersionMap(versionMap)
+
       console.log('')
-      return hasUpdate(update)
+      ;(await hasUpdate(versionMap.update))
         ? promptUpdate()
             .then(confirm => {
               if (!confirm) {
@@ -74,14 +89,14 @@ export default () => {
               }
               spinner.text = 'Installing'
               spinner.start()
-              return installUpdates(update)
+              return installUpdates(versionMap.update)
             })
             .then(() => spinner.stop())
             .then(() => log.info('All updates were installed'))
         : log.info('All up to date!')
-    })
-    .catch(err => {
+    } catch (err) {
       spinner.stop()
       throw err
-    })
+    }
+  }
 }

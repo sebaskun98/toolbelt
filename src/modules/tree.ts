@@ -1,10 +1,5 @@
 export default {
   handler: './',
-  list: {
-    alias: 'ls',
-    description: 'List your installed VTEX apps',
-    handler: './apps/list',
-  },
   local: {
     account: {
       description: 'Show current account and copy it to clipboard',

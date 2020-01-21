@@ -1,9 +1,5 @@
 export default {
   handler: './',
-  whoami: {
-    description: 'See your credentials current status',
-    handler: './auth/whoami',
-  },
   workspace: {
     abtest: {
       start: {

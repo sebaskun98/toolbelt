@@ -1,11 +1,6 @@
 export default {
   handler: './',
   workspace: {
-    list: {
-      alias: 'ls',
-      description: 'List workspaces on this account',
-      handler: './workspace/list',
-    },
     promote: {
       description: 'Promote this workspace to master',
       handler: './workspace/promote',

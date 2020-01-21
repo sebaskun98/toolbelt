@@ -1,18 +1,5 @@
 export default {
   handler: './',
-  switch: {
-    description: 'Switch to another VTEX account',
-    handler: './auth/switch',
-    options: [
-      {
-        description: 'Specify login workspace',
-        long: 'workspace',
-        short: 'w',
-        type: 'string',
-      },
-    ],
-    requiredArgs: 'account',
-  },
   test: {
     description: 'Run your VTEX app unit tests',
     handler: './apps/testCommand',

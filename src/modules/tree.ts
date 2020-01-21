@@ -1,11 +1,5 @@
 export default {
   handler: './',
-  abtest: {
-    status: {
-      description: 'Display currently running AB tests results',
-      handler: './workspace/abtest/status',
-    },
-  },
   workspace: {
     create: {
       description: 'Create a new workspace with this name',

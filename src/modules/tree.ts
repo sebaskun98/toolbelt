@@ -1,10 +1,6 @@
 export default {
   handler: './',
   abtest: {
-    start: {
-      description: 'Start AB testing with current workspace',
-      handler: './workspace/abtest/start',
-    },
     finish: {
       description: 'Stop all AB testing in current account',
       handler: './workspace/abtest/finish',

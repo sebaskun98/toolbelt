@@ -14,10 +14,5 @@ export default {
         },
       ],
     },
-    delete: {
-      description: 'Delete redirects in the current account and workspace',
-      handler: './rewriter/delete',
-      requiredArgs: 'csvPath',
-    },
   },
 }

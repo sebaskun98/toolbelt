@@ -1,26 +1,27 @@
+import { flags } from '@oclif/command'
 import { createHash } from 'crypto'
 import { readFile, readJson } from 'fs-extra'
 import { length, map } from 'ramda'
 import { createInterface } from 'readline'
-
 import { rewriter } from '../../clients'
 import log from '../../logger'
 import { isVerbose } from '../../utils'
+import { CustomCommand } from '../../lib/CustomCommand'
 import {
   accountAndWorkspace,
   deleteMetainfo,
+  handleReadError,
   MAX_RETRIES,
   METAINFO_FILE,
   progressBar,
   readCSV,
+  RETRY_INTERVAL_S,
   saveMetainfo,
+  showGraphQLErrors,
   sleep,
   splitJsonArray,
   validateInput,
-  handleReadError,
-  RETRY_INTERVAL_S,
-  showGraphQLErrors,
-} from './utils'
+} from '../../modules/rewriter/utils'
 
 const DELETES = 'deletes'
 const [account, workspace] = accountAndWorkspace
@@ -81,7 +82,8 @@ const handleDelete = async (csvPath: string) => {
 }
 
 let retryCount = 0
-export default async (csvPath: string) => {
+
+export const redirectsDelete = async (csvPath: string) => {
   try {
     await handleDelete(csvPath)
   } catch (e) {
@@ -98,5 +100,23 @@ export default async (csvPath: string) => {
     await sleep(RETRY_INTERVAL_S * 1000)
     retryCount++
     await module.exports.default(csvPath)
+  }
+}
+
+export default class RedirectsDelete extends CustomCommand {
+  static description = 'Delete redirects in the current account and workspace'
+
+  static examples = []
+
+  static flags = {
+    help: flags.help({ char: 'h' }),
+  }
+
+  static args = [{ name: 'csvPath', required: true }]
+
+  async run() {
+    const { args } = this.parse(RedirectsDelete)
+    const csvPath = args.csvPath
+    await redirectsDelete(csvPath)
   }
 }

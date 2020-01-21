@@ -1,10 +1,6 @@
 export default {
   handler: './',
   workspace: {
-    info: {
-      description: 'Display information about the current workspace',
-      handler: './workspace/info',
-    },
     list: {
       alias: 'ls',
       description: 'List workspaces on this account',

@@ -1,19 +1,6 @@
 export default {
   handler: './',
   workspace: {
-    reset: {
-      description: 'Delete and create a workspace',
-      handler: './workspace/reset',
-      optionalArgs: 'name',
-      options: [
-        {
-          description: 'Whether to re-create the workspace as a production one',
-          long: 'production',
-          short: 'p',
-          type: 'boolean',
-        },
-      ],
-    },
     status: {
       description: 'Display information about a workspace',
       handler: './workspace/status',

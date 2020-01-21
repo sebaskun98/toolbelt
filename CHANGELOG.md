@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Move `vtex workspace abtest` to `vtex abtest`
+- Use `vtex edition get` instead of `vtex edition`
 
 ### Removed
 - `vtex browse` command

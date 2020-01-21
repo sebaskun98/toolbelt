@@ -92,8 +92,4 @@ export default {
       requiredArgs: 'csvPath',
     },
   },
-  edition: {
-    description: 'Get edition of the current account',
-    handler: './sponsor/getEdition',
-  },
 }

@@ -1,20 +1,20 @@
 export default {
   handler: './',
-  workspace: {
-    abtest: {
-      start: {
-        description: 'Start AB testing with current workspace',
-        handler: './workspace/abtest/start',
-      },
-      finish: {
-        description: 'Stop all AB testing in current account',
-        handler: './workspace/abtest/finish',
-      },
-      status: {
-        description: 'Display currently running AB tests results',
-        handler: './workspace/abtest/status',
-      },
+  abtest: {
+    start: {
+      description: 'Start AB testing with current workspace',
+      handler: './workspace/abtest/start',
     },
+    finish: {
+      description: 'Stop all AB testing in current account',
+      handler: './workspace/abtest/finish',
+    },
+    status: {
+      description: 'Display currently running AB tests results',
+      handler: './workspace/abtest/status',
+    },
+  },
+  workspace: {
     create: {
       description: 'Create a new workspace with this name',
       handler: './workspace/create',

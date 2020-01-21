@@ -1,18 +1,5 @@
 export default {
   handler: './',
-  uninstall: {
-    description: 'Uninstall an app (defaults to the app in the current directory)',
-    handler: './apps/uninstall',
-    optionalArgs: 'app',
-    options: [
-      {
-        description: 'Auto confirm prompts',
-        long: 'yes',
-        short: 'y',
-        type: 'boolean',
-      },
-    ],
-  },
   unlink: {
     description: 'Unlink an app on the current directory or a specified one',
     handler: './apps/unlink',

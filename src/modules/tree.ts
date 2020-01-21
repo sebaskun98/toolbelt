@@ -1,10 +1,6 @@
 export default {
   handler: './',
   workspace: {
-    promote: {
-      description: 'Promote this workspace to master',
-      handler: './workspace/promote',
-    },
     reset: {
       description: 'Delete and create a workspace',
       handler: './workspace/reset',

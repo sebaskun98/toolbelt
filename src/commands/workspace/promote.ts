@@ -1,12 +1,13 @@
-import * as Bluebird from 'bluebird'
+import { flags } from '@oclif/command'
 import chalk from 'chalk'
 
 import { workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
 import { CommandError, UserCancelledError } from '../../errors'
+import { CustomCommand } from '../../lib/CustomCommand'
 import log from '../../logger'
-import { promptConfirm } from '../prompts'
-import useCmd from './use'
+import { promptConfirm } from '../../modules/prompts'
+import { workspaceUse } from './use'
 
 const { promote, get } = workspaces
 const [account, currentWorkspace] = [getAccount(), getWorkspace()]
@@ -17,7 +18,7 @@ const isMaster = Promise.method((workspace: string) => {
   }
 })
 
-const isPromotable = (workspace: string): Bluebird<never | void> =>
+const isPromotable = (workspace: string) =>
   isMaster(workspace).then(async () => {
     const meta = await get(account, currentWorkspace)
     if (!meta.production) {
@@ -40,11 +41,25 @@ const promptPromoteConfirm = (workspace: string): Promise<any> =>
     }
   )
 
-export default () => {
-  log.debug('Promoting workspace', currentWorkspace)
-  return isPromotable(currentWorkspace)
-    .then(() => promptPromoteConfirm(currentWorkspace))
-    .then(() => promote(account, currentWorkspace))
-    .tap(() => log.info(`Workspace ${chalk.green(currentWorkspace)} promoted successfully`))
-    .then(() => useCmd('master'))
+export default class WorkspacePromote extends CustomCommand {
+  static description = 'Promote this workspace to master'
+
+  static examples = []
+
+  static flags = {
+    help: flags.help({ char: 'h' }),
+  }
+
+  static args = []
+
+  async run() {
+    this.parse(WorkspacePromote)
+
+    log.debug('Promoting workspace', currentWorkspace)
+    return isPromotable(currentWorkspace)
+      .then(() => promptPromoteConfirm(currentWorkspace))
+      .then(() => promote(account, currentWorkspace))
+      .tap(() => log.info(`Workspace ${chalk.green(currentWorkspace)} promoted successfully`))
+      .then(() => workspaceUse('master'))
+  }
 }

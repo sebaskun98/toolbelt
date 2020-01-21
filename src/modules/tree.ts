@@ -1,12 +1,5 @@
 export default {
   handler: './',
-  workspace: {
-    status: {
-      description: 'Display information about a workspace',
-      handler: './workspace/status',
-      optionalArgs: 'name',
-    },
-  },
   redirects: {
     import: {
       description: 'Import redirects for the current account and workspace',

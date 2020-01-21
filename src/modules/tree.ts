@@ -97,25 +97,6 @@ export default {
       handler: './workspace/status',
       optionalArgs: 'name',
     },
-    use: {
-      description: 'Use a workspace to perform operations',
-      handler: './workspace/use',
-      options: [
-        {
-          description: 'Resets workspace before using it',
-          long: 'reset',
-          short: 'r',
-          type: 'boolean',
-        },
-        {
-          description: 'Whether to create the workspace as production if it does not exist or is reset',
-          long: 'production',
-          short: 'p',
-          type: 'boolean',
-        },
-      ],
-      requiredArgs: 'name',
-    },
   },
   release: {
     description:

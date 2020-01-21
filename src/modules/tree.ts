@@ -1,18 +1,5 @@
 export default {
   handler: './',
-  use: {
-    description: 'Use a workspace to perform operations',
-    handler: './workspace/use',
-    requiredArgs: 'name',
-    options: [
-      {
-        description: 'If workspace does not exist, whether to create it as a production workspace',
-        long: 'production',
-        short: 'p',
-        type: 'boolean',
-      },
-    ],
-  },
   whoami: {
     description: 'See your credentials current status',
     handler: './auth/whoami',

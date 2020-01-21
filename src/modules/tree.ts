@@ -1,27 +1,6 @@
 export default {
   handler: './',
   workspace: {
-    delete: {
-      description: 'Delete a single or various workspaces',
-      handler: './workspace/delete',
-      options: [
-        {
-          description: 'Auto confirm prompts',
-          long: 'yes',
-          short: 'y',
-          type: 'boolean',
-        },
-        {
-          description: "Ignore if you're currently using the workspace",
-          long: 'force',
-          short: 'f',
-          type: 'boolean',
-        },
-      ],
-      requiredArgs: 'name',
-    },
-    description: 'Alias for vtex workspace info',
-    handler: './workspace/info',
     info: {
       description: 'Display information about the current workspace',
       handler: './workspace/info',

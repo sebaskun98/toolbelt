@@ -1,7 +1,10 @@
-import { apps } from '../../clients'
-import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
-import log from '../../logger'
-import { parseArgs, validateAppAction } from './utils'
+import { flags } from '@oclif/command'
+
+import { apps } from '../clients'
+import { CustomCommand } from '../lib/CustomCommand'
+import { ManifestEditor, ManifestValidator } from '../lib/manifest'
+import log from '../logger'
+import { validateAppAction } from '../modules/apps/utils'
 
 const { unlink, unlinkAll, listLinks } = apps
 
@@ -43,17 +46,32 @@ const unlinkAllApps = async (): Promise<void> => {
   }
 }
 
-export default async (optionalApp: string, options) => {
-  const linkedApps = await listLinks()
-  if (linkedApps.length === 0) {
-    return log.info('No linked apps?')
+export default class Unlink extends CustomCommand {
+  static description = 'Unlink an app on the current directory or a specified one'
+
+  static examples = []
+
+  static flags = {
+    help: flags.help({ char: 'h' }),
+    all: flags.boolean({ char: 'a', description: 'Unlink all apps', default: false }),
   }
 
-  if (options.a || options.all) {
-    return unlinkAllApps()
-  }
+  static args = [{ name: 'appId', required: false }]
 
-  const app = optionalApp || (await ManifestEditor.getManifestEditor()).appLocator
-  const appsList = [app, ...parseArgs(options._)]
-  return unlinkApps(appsList)
+  async run() {
+    const { args, flags } = this.parse(Unlink)
+    const optionalApp = args.appId
+    const linkedApps = await listLinks()
+    if (linkedApps.length === 0) {
+      return log.info('No linked apps?')
+    }
+
+    if (flags.all) {
+      return unlinkAllApps()
+    }
+
+    const app = optionalApp || (await ManifestEditor.getManifestEditor()).appLocator
+    const appsList = [app]
+    return unlinkApps(appsList)
+  }
 }

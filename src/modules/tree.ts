@@ -1,18 +1,5 @@
 export default {
   handler: './',
-  unlink: {
-    description: 'Unlink an app on the current directory or a specified one',
-    handler: './apps/unlink',
-    optionalArgs: 'app',
-    options: [
-      {
-        description: 'Unlink all apps',
-        long: 'all',
-        short: 'a',
-        type: 'boolean',
-      },
-    ],
-  },
   update: {
     description: 'Update all installed apps to the latest (minor or patch) version',
     handler: './housekeeper/update',

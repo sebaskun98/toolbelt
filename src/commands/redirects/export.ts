@@ -1,13 +1,12 @@
+import { flags } from '@oclif/command'
 import { createHash } from 'crypto'
-import { writeFile } from 'fs-extra'
-import { readJson } from 'fs-extra'
+import { readJson, writeFile } from 'fs-extra'
 import { Parser } from 'json2csv'
-import { compose, concat, length, map, range, pluck, prop, sum } from 'ramda'
+import { compose, concat, length, map, pluck, prop, range, sum } from 'ramda'
 import { createInterface } from 'readline'
-
 import { rewriter } from '../../clients'
+import { CustomCommand } from '../../lib/CustomCommand'
 import log from '../../logger'
-import { isVerbose } from '../../utils'
 import {
   accountAndWorkspace,
   deleteMetainfo,
@@ -15,11 +14,12 @@ import {
   MAX_RETRIES,
   METAINFO_FILE,
   progressBar,
-  saveMetainfo,
-  sleep,
   RETRY_INTERVAL_S,
+  saveMetainfo,
   showGraphQLErrors,
-} from './utils'
+  sleep,
+} from '../../modules/rewriter/utils'
+import { isVerbose } from '../../utils'
 
 const EXPORTS = 'exports'
 const [account, workspace] = accountAndWorkspace
@@ -83,22 +83,36 @@ const handleExport = async (csvPath: string) => {
 }
 
 let retryCount = 0
-export default async (csvPath: string) => {
-  try {
-    await handleExport(csvPath)
-  } catch (e) {
-    log.error('Error handling export\n')
-    showGraphQLErrors(e)
-    if (isVerbose) {
-      console.log(e)
+export default class RedirectsExport extends CustomCommand {
+  static description = 'Export all redirects in the current account and workspace'
+
+  static examples = []
+
+  static flags = {
+    help: flags.help({ char: 'h' }),
+  }
+
+  static args = [{ name: 'csvPath', required: true }]
+
+  async run() {
+    const { args } = this.parse(RedirectsExport)
+    const csvPath = args.csvPath
+    try {
+      await handleExport(csvPath)
+    } catch (e) {
+      log.error('Error handling export\n')
+      showGraphQLErrors(e)
+      if (isVerbose) {
+        console.log(e)
+      }
+      if (retryCount >= MAX_RETRIES) {
+        process.exit()
+      }
+      log.error(`Retrying in ${RETRY_INTERVAL_S} seconds...`)
+      log.info('Press CTRL+C to abort')
+      await sleep(RETRY_INTERVAL_S * 1000)
+      retryCount++
+      await module.exports.default(csvPath)
     }
-    if (retryCount >= MAX_RETRIES) {
-      process.exit()
-    }
-    log.error(`Retrying in ${RETRY_INTERVAL_S} seconds...`)
-    log.info('Press CTRL+C to abort')
-    await sleep(RETRY_INTERVAL_S * 1000)
-    retryCount++
-    await module.exports.default(csvPath)
   }
 }

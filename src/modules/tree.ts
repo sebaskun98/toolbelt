@@ -14,11 +14,6 @@ export default {
         },
       ],
     },
-    export: {
-      description: 'Export all redirects in the current account and workspace',
-      handler: './rewriter/export',
-      requiredArgs: 'csvPath',
-    },
     delete: {
       description: 'Delete redirects in the current account and workspace',
       handler: './rewriter/delete',

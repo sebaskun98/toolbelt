@@ -1,9 +1,5 @@
 export default {
   handler: './',
-  update: {
-    description: 'Update all installed apps to the latest (minor or patch) version',
-    handler: './housekeeper/update',
-  },
   use: {
     description: 'Use a workspace to perform operations',
     handler: './workspace/use',

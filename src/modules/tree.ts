@@ -67,10 +67,6 @@ export default {
       optionalArgs: 'name',
     },
   },
-  url: {
-    description: 'Prints base URL for current account, workspace and environment',
-    handler: './url',
-  },
   redirects: {
     import: {
       description: 'Import redirects for the current account and workspace',

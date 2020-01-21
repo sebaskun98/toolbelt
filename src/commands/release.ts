@@ -1,8 +1,10 @@
+import { flags } from '@oclif/command'
 import chalk from 'chalk'
 import { indexOf, prop } from 'ramda'
-import * as semver from 'semver'
+import semver from 'semver'
 
-import log from '../../logger'
+import { CustomCommand } from '../lib/CustomCommand'
+import log from '../logger'
 import {
   add,
   bump,
@@ -17,7 +19,7 @@ import {
   readVersion,
   tag,
   updateChangelog,
-} from './utils'
+} from '../modules/release/utils'
 
 const releaseTypeAliases = {
   pre: 'prerelease',
@@ -72,43 +74,60 @@ Valid release tags are: ${supportedTagNames.join(', ')}`)
   }
 }
 
-export default async (
-  releaseType = 'patch', // This arg. can also be a valid (semver) version.
-  tagName = 'beta'
-) => {
-  checkGit()
-  checkIfInGitRepo()
-  const normalizedReleaseType = prop<string>(releaseType, releaseTypeAliases) || releaseType
-  const [oldVersion, newVersion] = getNewAndOldVersions(normalizedReleaseType, tagName)
+export default class Release extends CustomCommand {
+  static description =
+    'Bump app version, commit and push to remote. Only for git users. The first option can also be a specific valid semver version'
 
-  log.info(`Old version: ${chalk.bold(oldVersion)}`)
-  log.info(`New version: ${chalk.bold.yellow(newVersion)}`)
+  static examples = []
 
-  const [month, day, year] = new Date()
-    .toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })
-    .split('/')
-
-  // Pachamama v2 requires that version tags start with a 'v' character.
-  const tagText = `v${newVersion}`
-  const changelogVersion = `\n\n## [${newVersion}] - ${year}-${month}-${day}`
-
-  if (!(await confirmRelease())) {
-    // Abort release.
-    return
+  static flags = {
+    help: flags.help({ char: 'h' }),
   }
-  log.info('Starting release...')
-  try {
-    await preRelease()
-    await bump(newVersion)
-    if (shouldUpdateChangelog(normalizedReleaseType, tagName)) {
-      updateChangelog(changelogVersion)
+
+  static args = [
+    { name: 'releaseType', required: false, default: 'patch' },
+    { name: 'tagName', required: false, default: 'beta' },
+  ]
+
+  async run() {
+    const {
+      args: { releaseType, tagName },
+    } = this.parse(Release)
+
+    checkGit()
+    checkIfInGitRepo()
+    const normalizedReleaseType = prop<string>(releaseType, releaseTypeAliases) || releaseType
+    const [oldVersion, newVersion] = getNewAndOldVersions(normalizedReleaseType, tagName)
+
+    log.info(`Old version: ${chalk.bold(oldVersion)}`)
+    log.info(`New version: ${chalk.bold.yellow(newVersion)}`)
+
+    const [month, day, year] = new Date()
+      .toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })
+      .split('/')
+
+    // Pachamama v2 requires that version tags start with a 'v' character.
+    const tagText = `v${newVersion}`
+    const changelogVersion = `\n\n## [${newVersion}] - ${year}-${month}-${day}`
+
+    if (!(await confirmRelease())) {
+      // Abort release.
+      return
     }
-    await add()
-    await commit(tagText)
-    await tag(tagText)
-    await push(tagText)
-    await postRelease()
-  } catch (e) {
-    log.error(`Failed to release \n${e}`)
+    log.info('Starting release...')
+    try {
+      await preRelease()
+      await bump(newVersion)
+      if (shouldUpdateChangelog(normalizedReleaseType, tagName)) {
+        updateChangelog(changelogVersion)
+      }
+      await add()
+      await commit(tagText)
+      await tag(tagText)
+      await push(tagText)
+      await postRelease()
+    } catch (e) {
+      log.error(`Failed to release \n${e}`)
+    }
   }
 }

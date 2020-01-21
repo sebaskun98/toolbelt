@@ -67,12 +67,6 @@ export default {
       optionalArgs: 'name',
     },
   },
-  release: {
-    description:
-      'Bump app version, commit and push to remote. Only for git users. The first option can also be a specific valid semver version',
-    handler: './release',
-    optionalArgs: ['releaseType', 'tagName'],
-  },
   url: {
     description: 'Prints base URL for current account, workspace and environment',
     handler: './url',

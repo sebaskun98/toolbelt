@@ -1,7 +1,7 @@
 import chalk from 'chalk'
-import * as updateNotifier from 'update-notifier'
+import updateNotifier from 'update-notifier'
 
-import * as pkg from '../package.json'
+import pkg from '../package.json'
 
 export default function notify() {
   const notifier = updateNotifier({ pkg, updateCheckInterval: 1000 * 60 * 60 * 1 })

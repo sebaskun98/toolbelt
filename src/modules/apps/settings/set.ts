@@ -1,9 +1,6 @@
-import { __, merge, zipObj } from 'ramda'
+import { merge, zipObj, __ } from 'ramda'
 import { apps } from '../../../clients'
 import { parseArgs } from '../utils'
-
-const getAppSettings = Promise.method(apps.getAppSettings)
-const saveAppSettings = Promise.method(apps.saveAppSettings)
 
 const castValue = value => {
   let parsedValue
@@ -30,11 +27,12 @@ const transformCommandsToObj = commandSettings => {
   return zipObj(k, v)
 }
 
-export default (app: string, _, ___, options) => {
+export default async (app: string, _, ___, options) => {
   const commandSettings = transformCommandsToObj(parseArgs(options._))
-  return getAppSettings(app)
+  const newSettings = await apps
+    .getAppSettings(app)
     .then(merge(__, commandSettings))
     .then(newSettings => JSON.stringify(newSettings, null, 2))
-    .tap(newSettings => saveAppSettings(app, newSettings))
-    .tap(console.log)
+  const response = await apps.saveAppSettings(app, newSettings)
+  console.log(response)
 }

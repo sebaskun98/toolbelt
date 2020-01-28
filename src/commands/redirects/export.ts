@@ -61,7 +61,7 @@ const handleExport = async (csvPath: string) => {
     process.exit()
   })
 
-  await Promise.each(listOfRanges.splice(counter), async ([from, to]) => {
+  for (const [from, to] of listOfRanges.splice(counter)) {
     let result: any
     try {
       result = await rewriter.exportRedirects(from, to)
@@ -73,7 +73,8 @@ const handleExport = async (csvPath: string) => {
     listOfRoutes = concat(listOfRoutes, result)
     counter++
     bar.tick()
-  })
+  }
+
   const json2csvParser = new Parser({ fields: FIELDS, delimiter: ';', quote: '' })
   const csv = json2csvParser.parse(listOfRoutes)
   await writeFile(`./${csvPath}`, csv)

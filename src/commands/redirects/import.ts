@@ -6,11 +6,8 @@ import { resolve } from 'path'
 import { compose, concat, difference, isEmpty, length, map, pluck, prop, reduce } from 'ramda'
 import { createInterface } from 'readline'
 import { rewriter } from '../../clients'
-import { RedirectInput } from '../../clients/rewriter'
-import log from '../../logger'
-import { isVerbose } from '../../utils'
 import { CustomCommand } from '../../lib/CustomCommand'
-import { redirectsDelete } from './delete'
+import log from '../../logger'
 import {
   accountAndWorkspace,
   deleteMetainfo,
@@ -26,6 +23,8 @@ import {
   splitJsonArray,
   validateInput,
 } from '../../modules/rewriter/utils'
+import { isVerbose } from '../../utils'
+import { redirectsDelete } from './delete'
 
 const IMPORTS = 'imports'
 const [account, workspace] = accountAndWorkspace
@@ -78,7 +77,7 @@ const handleImport = async (csvPath: string) => {
     process.exit()
   })
 
-  await Promise.each(routesList.splice(counter), async (redirects: RedirectInput[]) => {
+  for (const redirects of routesList.splice(counter)) {
     try {
       await rewriter.importRedirects(redirects)
     } catch (e) {
@@ -88,7 +87,7 @@ const handleImport = async (csvPath: string) => {
     }
     counter++
     bar.tick()
-  })
+  }
 
   log.info('Finished!\n')
   listener.close()
@@ -118,7 +117,7 @@ export default class RedirectsImport extends CustomCommand {
     if (reset) {
       const indexFiles = await rewriter.routesIndexFiles().then(prop('routeIndexFiles'))
       const indexFileNames = pluck('fileName', indexFiles) || []
-      indexedRoutes = await Promise.mapSeries(indexFileNames, rewriter.routesIndex).then(
+      indexedRoutes = await Promise.all(indexFileNames.map(rewriter.routesIndex)).then(
         compose<any, any, any>(pluck('id'), reduce(concat, []))
       )
     }

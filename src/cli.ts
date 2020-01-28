@@ -16,7 +16,6 @@ import { getToken } from './conf'
 import { envCookies } from './env'
 import { CommandError, SSEConnectionError, UserCancelledError } from './errors'
 import log from './logger'
-import tree from './modules/tree'
 import { checkAndOpenNPSLink } from './nps'
 import { Token } from './Token.js'
 import notify from './update'
@@ -43,9 +42,6 @@ Bluebird.config({
   cancellation: true,
 })
 
-const run = command => Bluebird.resolve(unboundRun.call(tree, command, path.join(__dirname, 'modules')))
-
-const loginCmd = tree.login
 let loginPending = false
 
 if (process.env.NODE_ENV === 'development') {
@@ -69,7 +65,7 @@ const checkLogin = args => {
   const token = new Token(getToken())
   if (!token.isValid() && whitelist.indexOf(first) === -1) {
     log.debug('Requesting login before command:', args.join(' '))
-    return run({ command: loginCmd })
+    // rodar login!
   }
 }
 
@@ -83,18 +79,10 @@ const main = async () => {
 
   await checkLogin(args)
 
-  const command = await find(tree, without([VERBOSE], args))
-
-  if (isVerbose) {
-    const findWhoami = await find(tree, ['whoami'])
-    if (command.command !== findWhoami.command) {
-      await run(findWhoami)
-    }
-  }
+  // rodar comando
+  // se verbose rodar o whoami
 
   await checkAndOpenNPSLink()
-
-  await run(command)
 }
 
 const onError = e => {
@@ -114,9 +102,9 @@ const onError = e => {
         log.error('There was an authentication error. Please login again')
         // Try to login and re-issue the command.
         loginPending = true
-        return run({ command: loginCmd })
-          .tap(clearCachedModules)
-          .then(main) // TODO: catch with different handler for second error
+        // return run({ command: loginCmd })
+        //   .tap(clearCachedModules)
+        //   .then(main) // TODO: catch with different handler for second error
       } else {
         return // Prevent multiple login attempts
       }
@@ -188,12 +176,6 @@ const onError = e => {
   }
 
   process.exit(1)
-}
-
-try {
-  main().catch(onError)
-} catch (e) {
-  onError(e)
 }
 
 process.on('unhandledRejection', onError)

@@ -61,6 +61,7 @@ function webSocketTunnelHandler(host, path: string): (socket: net.Socket) => voi
 
     ws.on('message', data => {
       try {
+        // @ts-ignore
         socket.write(data)
       } catch (err) {
         end()

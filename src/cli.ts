@@ -1,13 +1,8 @@
 #!/usr/bin/env node
-import 'any-promise/register/bluebird'
 import axios from 'axios'
-import Bluebird from 'bluebird'
 import chalk from 'chalk'
-import { all as clearCachedModules } from 'clear-module'
-import { CommandNotFoundError, find, MissingRequiredArgsError, run as unboundRun } from 'findhelp'
+import { CommandNotFoundError, MissingRequiredArgsError } from 'findhelp'
 import os from 'os'
-import path from 'path'
-import { without } from 'ramda'
 import semver from 'semver'
 import 'v8-compile-cache'
 import pkg from '../package.json'
@@ -19,7 +14,6 @@ import log from './logger'
 import { checkAndOpenNPSLink } from './nps'
 import { Token } from './Token.js'
 import notify from './update'
-import { isVerbose, VERBOSE } from './utils'
 
 const nodeVersion = process.version.replace('v', '')
 if (!semver.satisfies(nodeVersion, pkg.engines.node)) {
@@ -35,11 +29,6 @@ axios.interceptors.request.use(config => {
     config.headers.Cookie = `${envCookies()}; ${config.headers.Cookie || ''}`
   }
   return config
-})
-
-global.Promise = Bluebird
-Bluebird.config({
-  cancellation: true,
 })
 
 let loginPending = false

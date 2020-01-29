@@ -35,7 +35,7 @@
     "node": ">=12"
   },
   "scripts": {
-    "watch": "nodemon",
+    "watch": "bash ./scripts/symlink.sh && yarn nodemon",
     "format": "prettier --config ./.prettierrc --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "eslint . --ext .ts --config .eslintrc",
     "format-lint": "yarn format && yarn lint",
@@ -44,6 +44,7 @@
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "rm -rf lib && tsc && yarn oclif-dev manifest && yarn docs",
     "preversion": "yarn docs && git add README.md",
+    "version": "oclif-dev readme && git add README.md",
     "test": "jest --passWithNoTests",
     "ci:test": "yarn test --ci"
   },
@@ -141,14 +142,13 @@
   },
   "oclif": {
     "commands": "./lib/commands",
-    "bin": "cli",
+    "bin": "vtex",
     "plugins": [
-      "@oclif/plugin-help",
-      "@tiagonapoli/oclif-plugin-spaced-commands"
+      "@oclif/plugin-help"
     ],
     "topics": {
-      "say": {
-        "description": "Commands to say something"
+      "workspace": {
+        "description": "Workspace related commands"
       }
     }
   }

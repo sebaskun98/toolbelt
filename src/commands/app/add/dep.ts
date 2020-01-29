@@ -1,13 +1,13 @@
 import { flags } from '@oclif/command'
 import chalk from 'chalk'
 
-import { router } from '../clients'
-import { region } from '../env'
-import { CommandError } from '../errors'
-import { CustomCommand } from '../lib/CustomCommand'
-import { ManifestEditor, ManifestValidator } from '../lib/manifest'
-import log from '../logger'
-import { appLatestMajor, pickLatestVersion, wildVersionByMajor } from '../modules/apps/utils'
+import { router } from '../../../clients'
+import { region } from '../../../env'
+import { CommandError } from '../../../errors'
+import { CustomCommand } from '../../../lib/CustomCommand'
+import { ManifestEditor, ManifestValidator } from '../../../lib/manifest'
+import log from '../../../logger'
+import { appLatestMajor, pickLatestVersion, wildVersionByMajor } from '../../../modules/apps/utils'
 
 const unprefixName = (str: string) => {
   return str.split(':').pop()

@@ -1,9 +1,11 @@
 #!/usr/bin/env node
+import os from 'os'
+
 import axios from 'axios'
 import chalk from 'chalk'
 import { CommandNotFoundError, MissingRequiredArgsError } from 'findhelp'
-import os from 'os'
 import semver from 'semver'
+
 import 'v8-compile-cache'
 import pkg from '../package.json'
 import * as conf from './conf'

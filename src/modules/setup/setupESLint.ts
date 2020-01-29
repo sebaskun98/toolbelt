@@ -1,5 +1,6 @@
-import { execSync } from 'child-process-es6-promise'
 import { resolve as resolvePath, dirname } from 'path'
+
+import { execSync } from 'child-process-es6-promise'
 import R from 'ramda'
 
 import log from '../../logger'

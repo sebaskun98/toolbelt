@@ -1,5 +1,6 @@
 import chalk from 'chalk'
 import { compose, contains, forEach, path, pathOr } from 'ramda'
+
 import { getToken } from './conf'
 import { colossusEndpoint, envCookies, publicEndpoint, cluster } from './env'
 import { SSEConnectionError } from './errors'
@@ -55,7 +56,7 @@ const hasNoSubject = (msg: Message) => {
   return msg.subject.startsWith('-') && !path(['body', 'subject'], msg)
 }
 
-const filterMessage = (subject: string, logAny: boolean = false, senders?: string[]) => (msg: Message) => {
+const filterMessage = (subject: string, logAny = false, senders?: string[]) => (msg: Message) => {
   return (
     (matchSubject(msg, subject) || (logAny && hasNoSubject(msg))) &&
     (!senders || contains(removeVersion(msg.sender), senders)) &&

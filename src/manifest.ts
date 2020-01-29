@@ -1,6 +1,7 @@
 import { accessSync } from 'fs'
-import { readFile, writeFile } from 'fs-extra'
 import path from 'path'
+
+import { readFile, writeFile } from 'fs-extra'
 import { memoize } from 'ramda'
 
 import { CommandError } from './errors'
@@ -14,7 +15,7 @@ const MANIFEST_SCHEMA = 'https://raw.githubusercontent.com/vtex/node-vtex-api/ma
 export const MANIFEST_FILE_NAME = 'manifest.json'
 
 export const getAppRoot = () => {
-  if(process.env.OCLIF_COMPILATION) {
+  if (process.env.OCLIF_COMPILATION) {
     return ''
   }
 
@@ -80,7 +81,7 @@ export const validateAppManifest = (manifest: any) => {
 const appName = new RegExp(`^${vendorPattern}\\.${namePattern}$`)
 const appLocator = new RegExp(`^${vendorPattern}\\.${namePattern}(?:@${wildVersionPattern})?$`)
 
-export const validateApp = (app: string, skipVersion: boolean = false) => {
+export const validateApp = (app: string, skipVersion = false) => {
   const regex = skipVersion ? appName : appLocator
   if (!regex.test(app)) {
     throw new CommandError(`Invalid app format, please use <vendor>.<name>${skipVersion ? '' : '[@<version>]'}`)

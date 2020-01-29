@@ -2,13 +2,13 @@ import { flags } from '@oclif/command'
 import chalk from 'chalk'
 import { compose, equals, head, path } from 'ramda'
 
-import { apps, billing } from '../clients'
-import { UserCancelledError } from '../errors'
-import { CustomCommand } from '../lib/CustomCommand'
-import { ManifestValidator } from '../lib/manifest'
-import log from '../logger'
-import { optionsFormatter, validateAppAction } from '../modules/apps/utils'
-import { promptConfirm } from '../modules/prompts'
+import { apps, billing } from '../../../clients'
+import { UserCancelledError } from '../../../errors'
+import { CustomCommand } from '../../../lib/CustomCommand'
+import { ManifestValidator } from '../../../lib/manifest'
+import log from '../../../logger'
+import { optionsFormatter, validateAppAction } from '../../../modules/apps/utils'
+import { promptConfirm } from '../../../modules/prompts'
 
 const { installApp } = billing
 const { installApp: legacyInstallApp } = apps

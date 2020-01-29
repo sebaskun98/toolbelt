@@ -2,6 +2,7 @@ import chalk from 'chalk'
 import ora from 'ora'
 import { curry, path } from 'ramda'
 import semver from 'semver'
+
 import { router } from '../../clients'
 import { Region } from '../../conf'
 import log from '../../logger'

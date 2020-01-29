@@ -1,9 +1,11 @@
+import { resolve as resolvePath } from 'path'
+
 import chalk from 'chalk'
 import { execSync } from 'child-process-es6-promise'
 import { diffArrays } from 'diff'
 import { existsSync } from 'fs-extra'
-import { resolve as resolvePath } from 'path'
 import R from 'ramda'
+
 import { dummyLogger } from '../clients/dummyLogger'
 import * as conf from '../conf'
 import * as env from '../env'

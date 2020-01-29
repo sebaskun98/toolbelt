@@ -3,8 +3,8 @@ import chalk from 'chalk'
 import { indexOf, prop } from 'ramda'
 import semver from 'semver'
 
-import { CustomCommand } from '../lib/CustomCommand'
-import log from '../logger'
+import { CustomCommand } from '../../lib/CustomCommand'
+import log from '../../logger'
 import {
   add,
   bump,
@@ -19,7 +19,7 @@ import {
   readVersion,
   tag,
   updateChangelog,
-} from '../modules/release/utils'
+} from '../../modules/release/utils'
 
 const releaseTypeAliases = {
   pre: 'prerelease',

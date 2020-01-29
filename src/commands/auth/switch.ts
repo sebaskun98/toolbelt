@@ -1,11 +1,11 @@
 import { flags } from '@oclif/command'
 import chalk from 'chalk'
 
-import { getAccount, getLastUsedAccount, getLogin, getTokens, getWorkspace } from '../conf'
-import { CommandError } from '../errors'
-import { CustomCommand } from '../lib/CustomCommand'
-import log from '../logger'
-import { Token } from '../Token'
+import { getAccount, getLastUsedAccount, getLogin, getTokens, getWorkspace } from '../../conf'
+import { CommandError } from '../../errors'
+import { CustomCommand } from '../../lib/CustomCommand'
+import log from '../../logger'
+import { Token } from '../../Token'
 import { saveCredentials, doLogin } from './login'
 
 export const switchAccount = async (account: string, workspace: string, previousAccount = getAccount()) => {

@@ -14,7 +14,7 @@ export const setup = async (ignoreLinked: boolean) => {
   setupESLint(manifest, buildersToAddAdditionalPackages)
   await setupTSConfig(manifest)
   await setupTypings(manifest, ignoreLinked, buildersToAddTypes)
-} 
+}
 
 export default class Setup extends CustomCommand {
   static description = 'Download react app typings, graphql app typings, lint config and tsconfig'

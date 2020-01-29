@@ -4,12 +4,12 @@ import chalk from 'chalk'
 import ora from 'ora'
 import { any, compose, difference, filter, identity, isEmpty, map, path, pluck, prop, props, union } from 'ramda'
 
-import { CustomCommand } from '../lib/CustomCommand'
-import { toMajorRange } from '../locator'
-import log from '../logger'
-import { getIOContext, IOClientOptions, matchedDepsDiffTable } from '../modules/utils'
-import { promptConfirm } from '../modules/prompts'
-import { isVerbose } from '../utils'
+import { CustomCommand } from '../../../lib/CustomCommand'
+import { toMajorRange } from '../../../locator'
+import log from '../../../logger'
+import { getIOContext, IOClientOptions, matchedDepsDiffTable } from '../../../modules/utils'
+import { promptConfirm } from '../../../modules/prompts'
+import { isVerbose } from '../../../utils'
 
 const promptUpdate = (): Promise<boolean> => Promise.resolve(promptConfirm('Apply version updates?'))
 

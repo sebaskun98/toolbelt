@@ -1,5 +1,6 @@
-import Ajv from 'ajv'
 import { createHash } from 'crypto'
+
+import Ajv from 'ajv'
 import csv from 'csvtojson'
 import { writeJsonSync } from 'fs-extra'
 import jsonSplit from 'json-array-split'

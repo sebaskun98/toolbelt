@@ -4,6 +4,7 @@ import Table from 'cli-table2'
 import enquirer from 'enquirer'
 import { compose, concat, contains, curry, drop, head, last, prop, propSatisfies, reduce, split, tail, __ } from 'ramda'
 import semverDiff from 'semver-diff'
+
 import { apps, createClients, workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
 import { CommandError, UserCancelledError } from '../../errors'

@@ -1,6 +1,7 @@
 import { flags } from '@oclif/command'
 import chalk from 'chalk'
 import R from 'ramda'
+
 import { Sponsor } from '../../clients/sponsor'
 import * as conf from '../../conf'
 import { UserCancelledError } from '../../errors'
@@ -8,7 +9,7 @@ import { CustomCommand } from '../../lib/CustomCommand'
 import log from '../../logger'
 import { promptConfirm } from '../../modules/prompts'
 import { getIOContext, IOClientOptions, switchToPreviousAccount } from '../../modules/utils'
-import { switchAccount } from '../switch'
+import { switchAccount } from '../auth/switch'
 
 const promptSwitchToAccount = async (account: string, initial: boolean) => {
   const reason = initial

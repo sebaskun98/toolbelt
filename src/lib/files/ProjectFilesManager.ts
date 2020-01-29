@@ -1,6 +1,7 @@
+import { join } from 'path'
+
 import { createReadStream, lstat, readFileSync, statSync } from 'fs-extra'
 import glob from 'globby'
-import { join } from 'path'
 import { reject } from 'ramda'
 
 export const createPathToFileObject = (root: string, prefix = '') => {

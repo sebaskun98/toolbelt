@@ -3,11 +3,11 @@ import chalk from 'chalk'
 import enquirer from 'enquirer'
 import { keys, prop, reject, test } from 'ramda'
 
-import { getLogin } from '../conf'
-import { CustomCommand } from '../lib/CustomCommand'
-import log from '../logger'
-import * as git from '../modules/init/git'
-import { promptConfirm } from '../modules/prompts'
+import { getLogin } from '../../conf'
+import { CustomCommand } from '../../lib/CustomCommand'
+import log from '../../logger'
+import * as git from '../../modules/init/git'
+import { promptConfirm } from '../../modules/prompts'
 
 const VTEXInternalTemplates = [
   // Only show these templates for VTEX e-mail users.
@@ -32,7 +32,7 @@ const templates = {
 const getTemplates = () =>
   // Return all templates if user's e-mail is `...@vtex...`.
   // Otherwise filter the VTEX internal templates.
-  test(/\@vtex\./, getLogin()) ? keys(templates) : reject(x => VTEXInternalTemplates.indexOf(x) >= 0, keys(templates))
+  test(/@vtex\./, getLogin()) ? keys(templates) : reject(x => VTEXInternalTemplates.indexOf(x) >= 0, keys(templates))
 
 const promptTemplates = async (): Promise<string> => {
   const cancel = 'Cancel'

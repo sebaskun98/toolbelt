@@ -1,5 +1,6 @@
-import { AppManifest } from '@vtex/api'
 import { Readable } from 'stream'
+
+import { AppManifest } from '@vtex/api'
 
 declare global {
   interface Change {

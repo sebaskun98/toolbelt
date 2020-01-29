@@ -1,36 +1,37 @@
+import { readFileSync } from 'fs'
+import { join, resolve as resolvePath, sep } from 'path'
+import { createInterface } from 'readline'
+
 import { flags } from '@oclif/command'
 import retry from 'async-retry'
 import chalk from 'chalk'
 import chokidar from 'chokidar'
 import debounce from 'debounce'
-import { readFileSync } from 'fs'
 import moment from 'moment'
-import { join, resolve as resolvePath, sep } from 'path'
 import { concat, intersection, isEmpty, map, pipe, prop } from 'ramda'
-import { createInterface } from 'readline'
 
-import { createClients } from '../clients'
-import { getAccount, getEnvironment, getWorkspace } from '../conf'
-import { CommandError } from '../errors'
-import { CustomCommand } from '../lib/CustomCommand'
-import { createPathToFileObject } from '../lib/files/ProjectFilesManager'
-import { YarnFilesManager } from '../lib/files/YarnFilesManager'
-import { ManifestEditor } from '../lib/manifest'
-import { fixPinnedDependencies, PinnedDeps } from '../lib/pinnedDependencies'
-import log from '../logger'
-import { getAppRoot } from '../manifest'
-import startDebuggerTunnel from '../modules/apps/debugger'
-import { getIgnoredPaths, listLocalFiles } from '../modules/apps/file'
+import { createClients } from '../../clients'
+import { getAccount, getEnvironment, getWorkspace } from '../../conf'
+import { CommandError } from '../../errors'
+import { CustomCommand } from '../../lib/CustomCommand'
+import { createPathToFileObject } from '../../lib/files/ProjectFilesManager'
+import { YarnFilesManager } from '../../lib/files/YarnFilesManager'
+import { ManifestEditor } from '../../lib/manifest'
+import { fixPinnedDependencies, PinnedDeps } from '../../lib/pinnedDependencies'
+import log from '../../logger'
+import { getAppRoot } from '../../manifest'
+import startDebuggerTunnel from '../../modules/apps/debugger'
+import { getIgnoredPaths, listLocalFiles } from '../../modules/apps/file'
 import {
   ChangeSizeLimitError,
   ChangeToSend,
   ProjectSizeLimitError,
   ProjectUploader,
-} from '../modules/apps/ProjectUploader'
-import { checkBuilderHubMessage, showBuilderHubMessage, validateAppAction } from '../modules/apps/utils'
-import { listenBuild } from '../modules/build'
-import { formatNano, runYarnIfPathExists } from '../modules/utils'
-import { setup } from './setup'
+} from '../../modules/apps/ProjectUploader'
+import { checkBuilderHubMessage, showBuilderHubMessage, validateAppAction } from '../../modules/apps/utils'
+import { listenBuild } from '../../modules/build'
+import { formatNano, runYarnIfPathExists } from '../../modules/utils'
+import { setup } from '../setup'
 
 let nodeNotifier
 if (process.platform !== 'win32') {
@@ -223,6 +224,7 @@ const performInitialLink = async (
 export default class Link extends CustomCommand {
   static description = 'Start a development session for this app'
 
+  static aliases = ['link']
   static examples = []
 
   static flags = {

@@ -3,7 +3,7 @@ import chalk from 'chalk'
 
 import { CommandError } from '../../errors'
 import { CustomCommand } from '../../lib/CustomCommand'
-import { getCluster, getEnvironment } from './../../conf'
+import { getCluster, getEnvironment } from '../../conf'
 
 export default class ConfigGet extends CustomCommand {
   static description = 'Gets the current value for the requested configuration'

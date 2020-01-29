@@ -1,6 +1,7 @@
+import { dirname, join, resolve } from 'path'
+
 import { parse as parseYarnLock } from '@yarnpkg/lockfile'
 import { pathExists, readFile, readJson, writeJson, writeJsonSync } from 'fs-extra'
-import { dirname, join, resolve } from 'path'
 import semver from 'semver'
 
 export interface PackageJsonInterface {

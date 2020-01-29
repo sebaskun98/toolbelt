@@ -1,4 +1,5 @@
 import { clone } from 'ramda'
+
 import { PackageJson, PackageJsonInterface } from './index'
 
 jest.mock('fs-extra', () => {

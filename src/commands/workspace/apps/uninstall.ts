@@ -1,14 +1,14 @@
 import { flags } from '@oclif/command'
 import chalk from 'chalk'
 
-import { apps } from '../clients'
-import { getAccount, getWorkspace } from '../conf'
-import { UserCancelledError } from '../errors'
-import { CustomCommand } from '../lib/CustomCommand'
-import { ManifestEditor, ManifestValidator } from '../lib/manifest'
-import log from '../logger'
-import { validateAppAction } from '../modules/apps/utils'
-import { promptConfirm } from '../modules/prompts'
+import { apps } from '../../../clients'
+import { getAccount, getWorkspace } from '../../../conf'
+import { UserCancelledError } from '../../../errors'
+import { CustomCommand } from '../../../lib/CustomCommand'
+import { ManifestEditor, ManifestValidator } from '../../../lib/manifest'
+import log from '../../../logger'
+import { validateAppAction } from '../../../modules/apps/utils'
+import { promptConfirm } from '../../../modules/prompts'
 
 const { uninstallApp } = apps
 

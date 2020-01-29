@@ -1,5 +1,7 @@
-import { readJson, writeJson, writeJsonSync } from 'fs-extra'
 import path from 'path'
+
+import { readJson, writeJson, writeJsonSync } from 'fs-extra'
+
 import { CommandError } from '../../errors'
 import { getAppRoot } from '../../manifest'
 import { ManifestValidator } from './ManifestValidator'

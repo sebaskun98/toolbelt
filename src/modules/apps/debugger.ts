@@ -1,6 +1,8 @@
-import streamToString from 'get-stream'
 import net from 'net'
+
+import streamToString from 'get-stream'
 import WebSocket from 'ws'
+
 import { getAccount, getToken, getWorkspace } from '../../conf'
 import { region } from '../../env'
 import { ManifestEditor } from '../../lib/manifest'

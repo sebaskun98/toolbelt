@@ -1,7 +1,9 @@
-import chalk from 'chalk'
 import { join } from 'path'
 import util from 'util'
+
+import chalk from 'chalk'
 import { createLogger, format, transports } from 'winston'
+
 import { configDir } from './conf'
 
 // Setup logging

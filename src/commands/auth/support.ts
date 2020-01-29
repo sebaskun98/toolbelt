@@ -5,10 +5,10 @@ import enquirer from 'enquirer'
 import jwt from 'jsonwebtoken'
 import { prop } from 'ramda'
 
-import { getAccount, getToken, getWorkspace, saveAccount, saveToken, saveWorkspace } from '../conf'
-import * as env from '../env'
-import log from '../logger'
-import { CustomCommand } from '../lib/CustomCommand'
+import { getAccount, getToken, getWorkspace, saveAccount, saveToken, saveWorkspace } from '../../conf'
+import * as env from '../../env'
+import log from '../../logger'
+import { CustomCommand } from '../../lib/CustomCommand'
 
 const getAvailableRoles = async (region: string, token: string, supportedAccount: string): Promise<string[]> => {
   const response = await axios.get(

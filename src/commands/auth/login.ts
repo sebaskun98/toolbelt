@@ -10,12 +10,12 @@ import opn from 'opn'
 import { prop } from 'ramda'
 import randomstring from 'randomstring'
 
-import { clusterIdDomainInfix, publicEndpoint } from '../env'
-import { onAuth } from '../sse'
-import * as conf from '../conf'
-import { CustomCommand } from '../lib/CustomCommand'
-import log from '../logger'
-import { promptConfirm } from '../modules/prompts'
+import { clusterIdDomainInfix, publicEndpoint } from '../../env'
+import { onAuth } from '../../sse'
+import * as conf from '../../conf'
+import { CustomCommand } from '../../lib/CustomCommand'
+import log from '../../logger'
+import { promptConfirm } from '../../modules/prompts'
 
 const [cachedAccount, cachedLogin, cachedWorkspace] = [conf.getAccount(), conf.getLogin(), conf.getWorkspace()]
 const details =

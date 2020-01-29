@@ -5,7 +5,7 @@ import { contains, values } from 'ramda'
 import { CommandError } from '../../errors'
 import log from '../../logger'
 import { CustomCommand } from '../../lib/CustomCommand'
-import { Environment, saveCluster, saveEnvironment } from './../../conf'
+import { Environment, saveCluster, saveEnvironment } from '../../conf'
 
 const envValues = values(Environment)
 

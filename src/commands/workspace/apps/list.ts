@@ -2,12 +2,12 @@ import { flags } from '@oclif/command'
 import chalk from 'chalk'
 import { compose, equals, filter, head, prop, split } from 'ramda'
 
-import { apps } from '../clients'
-import { getAccount, getWorkspace } from '../conf'
-import { CustomCommand } from '../lib/CustomCommand'
-import { parseLocator } from '../locator'
-import log from '../logger'
-import { createTable } from '../table'
+import { apps } from '../../../clients'
+import { getAccount, getWorkspace } from '../../../conf'
+import { CustomCommand } from '../../../lib/CustomCommand'
+import { parseLocator } from '../../../locator'
+import log from '../../../logger'
+import { createTable } from '../../../table'
 
 const { listApps } = apps
 
@@ -49,6 +49,8 @@ export default class List extends CustomCommand {
   static description = 'List your installed VTEX apps'
 
   static examples = []
+
+  static aliases = ['ls', 'list', 'workspace:apps:ls']
 
   static flags = {
     help: flags.help({ char: 'h' }),

@@ -1,10 +1,12 @@
-import { flags } from '@oclif/command'
 import { createHash } from 'crypto'
+import { resolve } from 'path'
+import { createInterface } from 'readline'
+
+import { flags } from '@oclif/command'
 import { readFile, readJson, remove, writeFile } from 'fs-extra'
 import { Parser } from 'json2csv'
-import { resolve } from 'path'
 import { compose, concat, difference, isEmpty, length, map, pluck, prop, reduce } from 'ramda'
-import { createInterface } from 'readline'
+
 import { rewriter } from '../../clients'
 import { CustomCommand } from '../../lib/CustomCommand'
 import log from '../../logger'

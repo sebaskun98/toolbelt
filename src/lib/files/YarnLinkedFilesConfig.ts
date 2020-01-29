@@ -1,7 +1,9 @@
+import { dirname, join } from 'path'
+
 import { lstat, readdir, realpath, Stats } from 'fs-extra'
 import glob from 'globby'
-import { dirname, join } from 'path'
 import { partition, unnest } from 'ramda'
+
 import log from '../../logger'
 
 const isScopedDirOrLink = (path: string, stats: Stats) => {

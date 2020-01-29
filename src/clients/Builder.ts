@@ -1,4 +1,5 @@
 import { AppClient, CacheType, InstanceOptions, IOContext } from '@vtex/api'
+
 import { ChangeToSend } from '../modules/apps/ProjectUploader'
 
 interface StickyOptions {

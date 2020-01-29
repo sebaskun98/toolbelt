@@ -1,17 +1,17 @@
 import { flags } from '@oclif/command'
 import chalk from 'chalk'
 
-import { createClients } from '../clients'
-import { getAccount, getToken, getWorkspace } from '../conf'
-import { UserCancelledError } from '../errors'
-import { CustomCommand } from '../lib/CustomCommand'
-import { ManifestValidator } from '../lib/manifest'
-import { parseLocator, toAppLocator } from '../locator'
-import log from '../logger'
-import { getManifest } from '../manifest'
-import { switchAccountMessage } from '../modules/apps/utils'
-import { promptConfirm } from '../modules/prompts'
-import { switchAccount } from './switch'
+import { createClients } from '../../clients'
+import { getAccount, getToken, getWorkspace } from '../../conf'
+import { UserCancelledError } from '../../errors'
+import { CustomCommand } from '../../lib/CustomCommand'
+import { ManifestValidator } from '../../lib/manifest'
+import { parseLocator, toAppLocator } from '../../locator'
+import log from '../../logger'
+import { getManifest } from '../../manifest'
+import { switchAccountMessage } from '../../modules/apps/utils'
+import { promptConfirm } from '../../modules/prompts'
+import { switchAccount } from '../auth/switch'
 
 const switchToVendorMessage = (vendor: string): string => {
   return `You are trying to deploy this app in an account that differs from the indicated vendor. Do you want to deploy in account ${chalk.blue(

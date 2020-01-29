@@ -1,8 +1,10 @@
-import { flags } from '@oclif/command'
 import { createHash } from 'crypto'
+import { createInterface } from 'readline'
+
+import { flags } from '@oclif/command'
 import { readFile, readJson } from 'fs-extra'
 import { length, map } from 'ramda'
-import { createInterface } from 'readline'
+
 import { rewriter } from '../../clients'
 import log from '../../logger'
 import { isVerbose } from '../../utils'

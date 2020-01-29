@@ -1,9 +1,11 @@
-import axios from 'axios'
-import { outputJsonSync, readJsonSync, readFileSync, outputFileSync } from 'fs-extra'
 import path from 'path'
 import { pipeline } from 'stream'
-import tar from 'tar'
 import util from 'util'
+
+import axios from 'axios'
+import { outputJsonSync, readJsonSync, readFileSync, outputFileSync } from 'fs-extra'
+import tar from 'tar'
+
 import { getToken } from '../../conf'
 import { getAppRoot } from '../../manifest'
 

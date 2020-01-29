@@ -1,10 +1,10 @@
 import { flags } from '@oclif/command'
 
-import { apps } from '../clients'
-import { CustomCommand } from '../lib/CustomCommand'
-import { ManifestEditor, ManifestValidator } from '../lib/manifest'
-import log from '../logger'
-import { validateAppAction } from '../modules/apps/utils'
+import { apps } from '../../clients'
+import { CustomCommand } from '../../lib/CustomCommand'
+import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
+import log from '../../logger'
+import { validateAppAction } from '../../modules/apps/utils'
 
 const { unlink, unlinkAll, listLinks } = apps
 

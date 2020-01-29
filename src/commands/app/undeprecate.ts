@@ -1,16 +1,16 @@
 import { flags } from '@oclif/command'
 import chalk from 'chalk'
 
-import { createClients } from '../clients'
-import { getAccount, getToken, getWorkspace } from '../conf'
-import { UserCancelledError } from '../errors'
-import { CustomCommand } from '../lib/CustomCommand'
-import { ManifestEditor, ManifestValidator } from '../lib/manifest'
-import { parseLocator } from '../locator'
-import log from '../logger'
-import { switchAccountMessage } from '../modules/apps/utils'
-import { switchAccount } from './switch'
-import { promptConfirm } from '../modules/prompts'
+import { createClients } from '../../clients'
+import { getAccount, getToken, getWorkspace } from '../../conf'
+import { UserCancelledError } from '../../errors'
+import { CustomCommand } from '../../lib/CustomCommand'
+import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
+import { parseLocator } from '../../locator'
+import log from '../../logger'
+import { switchAccountMessage } from '../../modules/apps/utils'
+import { switchAccount } from '../auth/switch'
+import { promptConfirm } from '../../modules/prompts'
 
 let originalAccount
 let originalWorkspace

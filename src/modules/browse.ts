@@ -2,8 +2,10 @@ import axios from 'axios'
 import jwt from 'jsonwebtoken'
 import opn from 'opn'
 import R from 'ramda'
+
 import * as conf from '../conf'
 import { clusterIdDomainInfix, publicEndpoint } from '../env'
+
 // Doesn't seem to work with 'import', seems to return undefined for some reason ¯\_(ツ)_/¯
 const QRCode = require('qrcode-terminal') // eslint-disable-line @typescript-eslint/no-var-requires
 

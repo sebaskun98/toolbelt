@@ -1,3 +1,5 @@
+import { resolve } from 'path'
+
 import chalk from 'chalk'
 import { execSync } from 'child-process-es6-promise'
 import {
@@ -11,9 +13,9 @@ import {
   writeSync,
 } from 'fs-extra'
 import { safeLoad } from 'js-yaml'
-import { resolve } from 'path'
 import { find, path } from 'ramda'
 import semver from 'semver'
+
 import log from '../../logger'
 import { getAppRoot } from '../../manifest'
 import { promptConfirm } from '../prompts'

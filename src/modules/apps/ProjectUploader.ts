@@ -1,8 +1,10 @@
+import { Readable } from 'stream'
+import { ZlibOptions } from 'zlib'
+
 import archiver from 'archiver'
 import chalk from 'chalk'
 import getStream from 'get-stream'
-import { Readable } from 'stream'
-import { ZlibOptions } from 'zlib'
+
 import { createClients } from '../../clients'
 import { Builder, BuildResult, RequestParams } from '../../clients/Builder'
 import { getSavedOrMostAvailableHost } from '../../host'
@@ -12,7 +14,7 @@ const MB = 1000000
 
 export interface FileToSend {
   path: string
-  content: String | Readable | Buffer | NodeJS.ReadableStream
+  content: string | Readable | Buffer | NodeJS.ReadableStream
   byteSize: number
 }
 

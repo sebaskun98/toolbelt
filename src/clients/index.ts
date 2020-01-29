@@ -1,4 +1,5 @@
 import { Apps, Events, InstanceOptions, IOContext, Logger, Registry, Router, Workspaces } from '@vtex/api'
+
 import { getAccount, getToken, getWorkspace } from '../conf'
 import * as env from '../env'
 import envTimeout from '../timeout'

@@ -1,8 +1,8 @@
 import { flags } from '@oclif/command'
 
-import * as conf from '../conf'
-import { clusterIdDomainInfix, publicEndpoint } from '../env'
-import { CustomCommand } from '../lib/CustomCommand'
+import * as conf from '../../conf'
+import { clusterIdDomainInfix, publicEndpoint } from '../../env'
+import { CustomCommand } from '../../lib/CustomCommand'
 
 export default class URL extends CustomCommand {
   static description = 'Prints base URL for current account, workspace and environment'

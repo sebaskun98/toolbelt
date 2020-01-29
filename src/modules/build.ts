@@ -60,7 +60,8 @@ const runErrorAction = (code, message, errorActions) => {
 }
 
 const listen = (appOrKey: string, options: ListeningOptions = {}): Promise<Unlisten> => {
-  return new Promise((resolve, reject, onCancel) => {
+  let unlistenAll
+  const promise: Promise<Unlisten> = new Promise((resolve, reject) => {
     const { waitCompletion, onError = {}, onBuild = false, context = currentContext, senders = null } = options
     const callback = (eventType, eventData) => {
       if (eventType === 'build.status') {
@@ -96,13 +97,19 @@ const listen = (appOrKey: string, options: ListeningOptions = {}): Promise<Unlis
         )
       }
     }
+
     const unlisten = onBuildEvent(context, appOrKey, callback, senders)
-    const unlistenAll = () => unlisten(...allEvents)
-    onCancel(unlistenAll)
+    unlistenAll = () => unlisten(...allEvents)
     if (!waitCompletion) {
       resolve(unlistenAll)
     }
   })
+
+  promise.finally(() => {
+    unlistenAll?.()
+  })
+
+  return promise
 }
 
 export const listenBuild = async <T = void>(
@@ -111,12 +118,7 @@ export const listenBuild = async <T = void>(
   options: ListeningOptions = {}
 ): Promise<ListenResponse<T>> => {
   const listenPromise = listen(appOrKey, options)
-  try {
-    const response = await triggerBuild()
-    const unlisten = await listenPromise
-    return { response, unlisten }
-  } catch (e) {
-    listenPromise.cancel()
-    throw e
-  }
+  const response = await triggerBuild()
+  const unlisten = await listenPromise
+  return { response, unlisten }
 }

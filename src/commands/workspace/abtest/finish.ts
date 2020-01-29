@@ -3,12 +3,12 @@ import chalk from 'chalk'
 import enquirer from 'enquirer'
 import { map, prop } from 'ramda'
 
-import { getAccount } from '../../conf'
-import { UserCancelledError } from '../../errors'
-import { CustomCommand } from '../../lib/CustomCommand'
-import log from '../../logger'
-import { promptConfirm } from '../../modules/prompts'
-import { abtester, installedABTester } from '../../modules/workspace/abtest/utils'
+import { getAccount } from '../../../conf'
+import { UserCancelledError } from '../../../errors'
+import { CustomCommand } from '../../../lib/CustomCommand'
+import log from '../../../logger'
+import { promptConfirm } from '../../../modules/prompts'
+import { abtester, installedABTester } from '../../../modules/workspace/abtest/utils'
 import { abTestStatus } from './status'
 
 const [account] = [getAccount()]

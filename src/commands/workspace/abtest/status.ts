@@ -4,11 +4,11 @@ import moment from 'moment'
 import numbro from 'numbro'
 import R from 'ramda'
 
-import { getAccount } from '../../conf'
-import { CustomCommand } from '../../lib/CustomCommand'
-import log from '../../logger'
-import { abtester, formatDuration, installedABTester } from '../../modules/workspace/abtest/utils'
-import { createTable } from '../../table'
+import { getAccount } from '../../../conf'
+import { CustomCommand } from '../../../lib/CustomCommand'
+import log from '../../../logger'
+import { abtester, formatDuration, installedABTester } from '../../../modules/workspace/abtest/utils'
+import { createTable } from '../../../table'
 
 interface ABTestStatusInterface {
   ABTestBeginning: string

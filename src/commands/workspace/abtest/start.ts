@@ -4,10 +4,10 @@ import enquirer from 'enquirer'
 import { compose, fromPairs, keys, map, mapObjIndexed, prop, values, zip } from 'ramda'
 import semver from 'semver'
 
-import { UserCancelledError } from '../../errors'
-import { CustomCommand } from '../../lib/CustomCommand'
-import log from '../../logger'
-import { promptConfirm } from '../../modules/prompts'
+import { UserCancelledError } from '../../../errors'
+import { CustomCommand } from '../../../lib/CustomCommand'
+import log from '../../../logger'
+import { promptConfirm } from '../../../modules/prompts'
 import {
   abtester,
   formatDays,
@@ -16,7 +16,7 @@ import {
   promptProductionWorkspace,
   promptProportionTrafic,
   SIGNIFICANCE_LEVELS,
-} from '../../modules/workspace/abtest/utils'
+} from '../../../modules/workspace/abtest/utils'
 
 const promptSignificanceLevel = async (): Promise<string> => {
   const significanceTimePreviews = await Promise.all(

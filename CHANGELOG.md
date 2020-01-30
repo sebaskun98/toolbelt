@@ -6,16 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.87.0] - 2020-01-30
-### Added
-- [vtex setup] `lint-staged` and `husky` configurations.
-
 ### Changed
-- [vtex setup] tooling step with updated dependencies.
+- Move `vtex workspace abtest` to `vtex abtest`
+- Use `vtex edition get` instead of `vtex edition`
+- Refactor `vtex infra install` to not use Bluebird
+- Refactor `vtex infra update` to not use Bluebird
 
-### Fixed
-- Invalid URLs when `cluster` variable is set.
-- [vtex link] Fix `bad_toolbelt_version` error message.
+### Removed
+- `vtex browse` command
+- `vtex production` command
+- `vtex promote` command
+- `vtex settings` command topic
 
 ## [2.86.1] - 2020-01-24
 ### Fixed
@@ -32,7 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Yarn linked modules files sending.
 
 ### Fixed
-- Fix `vtex infra install` creating `semver` object
+- Fix `vtex infra install` creating `semver` object 
 
 ## [2.85.0] - 2020-01-16
 ### Added

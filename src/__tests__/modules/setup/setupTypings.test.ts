@@ -9,7 +9,7 @@ const { setBuilderHubTypings } = mockCreateClients()
 const { setPackageJsonByBuilder, packageJsonEditorMock, setTarGzEmptyResponse } = mockSetupUtils()
 
 const { runYarn } = jest.requireMock('../../../modules/utils')
-const { setupTypings } = require('../../../modules/setup/setupTypings')
+const { setupTypings } = require('../../../modules/setup/typings/setupTypings')
 
 beforeEach(() => {
   jest.clearAllMocks()

@@ -137,6 +137,18 @@ export default {
         type: 'boolean',
       },
     ],
+    typings: {
+      description: 'Download react and graphql app typings',
+      handler: './setup/typings',
+    },
+    tooling: {
+      description: 'Setup linter and formatter',
+      handler: './setup/tooling',
+    },
+    tsconfig: {
+      description: 'Setup tsconfig',
+      handler: './setup/tsconfig',
+    },
   },
   link: {
     description: 'Start a development session for this app',

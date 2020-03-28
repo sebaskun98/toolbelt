@@ -1,8 +1,8 @@
 import R from 'ramda'
 
-import { createClients } from '../../clients'
-import log from '../../logger'
-import { tsconfigEditor } from './utils'
+import { createClients } from '../../../clients'
+import log from '../../../logger'
+import { tsconfigEditor } from '../utils'
 
 const selectTSConfig = (tsconfigsFromBuilder: any, version: string, builder: string) => {
   const builderTSConfig = R.prop(builder, tsconfigsFromBuilder)

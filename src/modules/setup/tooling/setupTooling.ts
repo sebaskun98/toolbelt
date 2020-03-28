@@ -4,9 +4,9 @@ import { resolve } from 'path'
 import chalk from 'chalk'
 import { mergeDeepRight } from 'ramda'
 
-import log from '../../logger'
-import { getAppRoot } from '../../manifest'
-import { yarnPath } from '../utils'
+import log from '../../../logger'
+import { getAppRoot } from '../../../manifest'
+import { yarnPath } from '../../utils'
 import {
   eslintrcEditor,
   packageJsonEditor,
@@ -14,7 +14,7 @@ import {
   prettierrcEditor,
   getRootPackageJson,
   hasDevDependenciesInstalled,
-} from './utils'
+} from '../utils'
 import {
   DEPENDENCIES,
   CONTENT_BASE_ESLINT_RC,
@@ -22,7 +22,7 @@ import {
   CONTENT_PRETTIER_RC,
   CONTENT_ESLINT_RC_BUILDERS,
   BUILDERS_WITH_TOOLING,
-} from './consts'
+} from '../consts'
 
 /**
  * Returns a base package.json configuration

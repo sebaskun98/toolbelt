@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { getManifest } from '../../manifest'
-import { setupTooling } from './setupTooling'
-import { setupTSConfig } from './setupTSConfig'
-import { setupTypings } from './setupTypings'
+import { setupTooling } from './tooling/setupTooling'
+import { setupTSConfig } from './tsconfig/setupTSConfig'
+import { setupTypings } from './typings/setupTypings'
 
 export default async (opts: { i?: boolean; 'ignore-linked': boolean }) => {
   const ignoreLinked = opts.i || opts['ignore-linked']

@@ -1,15 +1,15 @@
 import chalk from 'chalk'
 import R from 'ramda'
 
-import { createClients } from '../../clients'
-import { getAccount, getWorkspace } from '../../conf'
-import { publicEndpoint } from '../../env'
-import { toMajorRange } from '../../locator'
-import log from '../../logger'
-import { isLinked, resolveAppId, appIdFromRegistry } from '../apps/utils'
-import { runYarn } from '../utils'
-import { checkIfTarGzIsEmpty, packageJsonEditor, sortObject } from './utils'
-import { BUILDERS_WITH_TYPES } from './consts'
+import { createClients } from '../../../clients'
+import { getAccount, getWorkspace } from '../../../conf'
+import { publicEndpoint } from '../../../env'
+import { toMajorRange } from '../../../locator'
+import log from '../../../logger'
+import { isLinked, resolveAppId, appIdFromRegistry } from '../../apps/utils'
+import { runYarn } from '../../utils'
+import { checkIfTarGzIsEmpty, packageJsonEditor, sortObject } from '../utils'
+import { BUILDERS_WITH_TYPES } from '../consts'
 
 const getVendor = (appId: string) => appId.split('.')[0]
 const typingsURLRegex = /_v\/\w*\/typings/

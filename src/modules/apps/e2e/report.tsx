@@ -55,6 +55,7 @@ type SpecProps = {
 const FailedSpec: React.FunctionComponent<SpecProps> = ({ spec, report }) => {
   const video = path<string>(['report', 'video'], report)
   const screenshots = path<Screenshot[]>(['report', 'screenshots'], report)
+  const logs = path<string>(['report', 'logs'], report)
   return (
     <Box flexDirection="column">
       <Color bold>{`${spec}:`}</Color>
@@ -81,6 +82,7 @@ const FailedSpec: React.FunctionComponent<SpecProps> = ({ spec, report }) => {
             )
           })}
         {video && <FailedSpecDetail label={'Video'} text={video} indented={false} />}
+        {logs && <FailedSpecDetail label={'Logs'} text={logs} indented={true} />}
       </Box>
     </Box>
   )

@@ -1,12 +1,12 @@
+import { TemplateRenderer } from '@vtex/toolbelt-message-renderer'
 import chalk from 'chalk'
 import enquirer from 'enquirer'
 import { prop } from 'ramda'
 import * as conf from '../../conf'
+import { MessagesStore } from '../../lib/messages/MessagesStore'
 import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
-import boxen from 'boxen'
-import emojic from 'emojic'
 
 const [cachedAccount, cachedLogin, cachedWorkspace] = [conf.getAccount(), conf.getLogin(), conf.getWorkspace()]
 const details =
@@ -35,25 +35,10 @@ const promptAccount = async promptPreviousAcc => {
   return account
 }
 
-const notifyRelease = () => {
-  const RELEASE_NOTES_DATE = 'February 2020'
-  const RELEASE_NOTES_URL = 'https://bit.ly/2IQ2rSP'
-
-  const msg = [
-    `Are you up-to-date with the VTEX IO latest news?`,
-    `${emojic.memo} Don’t forget to check out our ${chalk.bold.green(`${RELEASE_NOTES_DATE} Release Notes:`)}`,
-    `${chalk.blueBright(RELEASE_NOTES_URL)}`,
-  ].join('\n')
-
-  const boxOptions: boxen.Options = {
-    padding: 1,
-    margin: 1,
-    borderStyle: boxen.BorderStyle.Round,
-    borderColor: 'yellow',
-    align: 'center',
-  }
-
-  console.log(boxen(msg, boxOptions))
+const notifyRelease = async () => {
+  const messageRenderer = TemplateRenderer.getSingleton()
+  const message = await MessagesStore.getSingleton().getMessage('releaseNotes')
+  messageRenderer.renderNode(message)
 }
 
 export default async options => {
@@ -74,7 +59,7 @@ export default async options => {
         workspace
       )}`
     )
-    notifyRelease()
+    await notifyRelease()
   } catch (err) {
     if (err.statusCode === 404) {
       log.error('Account/Workspace not found')

@@ -5,6 +5,7 @@ import { DeprecationChecker } from './DeprecationChecker/DeprecationChecker'
 import { join } from 'path'
 import { configDir } from '../conf'
 import { pathExistsSync, removeSync } from 'fs-extra'
+import { OutdatedChecker } from './OutdatedChecker/OutdatedChecker'
 
 export class CLIPreTasks {
   public static readonly PRETASKS_LOCAL_DIR = PathConstants.PRETASKS_FOLDER
@@ -50,5 +51,7 @@ export class CLIPreTasks {
       this.removeOutdatedPaths()
       DeprecationChecker.checkForDeprecation(CLIPreTasks.PRETASKS_LOCAL_DIR, this.pkg)
     }
+
+    OutdatedChecker.checkForOutdate(CLIPreTasks.PRETASKS_LOCAL_DIR, this.pkg)
   }
 }

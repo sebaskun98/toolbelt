@@ -11,7 +11,7 @@ import os from 'os'
 import path from 'path'
 import { without } from 'ramda'
 import * as pkg from '../package.json'
-import { CLIPrechecker } from './CLIPreChecker/CLIPrechecker'
+import { CLIPreTasks } from './CLIPreTasks/CLIPreTasks'
 import * as conf from './conf'
 import { envCookies } from './env'
 import { CommandError, SSEConnectionError, UserCancelledError } from './errors'
@@ -192,7 +192,7 @@ axios.interceptors.request.use(config => {
 process.on('unhandledRejection', onError)
 
 const start = async () => {
-  CLIPrechecker.getCLIPrechecker(pkg).runChecks()
+  CLIPreTasks.getCLIPreTasks(pkg).runChecks()
 
   // Show update notification if newer version is available
   notify()

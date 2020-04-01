@@ -5521,15 +5521,6 @@ log-utils@^0.2.1:
     time-stamp "^1.0.1"
     warning-symbol "^0.1.0"
 
-log-update@^3.0.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/log-update/-/log-update-3.4.0.tgz#3b9a71e00ac5b1185cc193a36d654581c48f97b9"
-  integrity sha512-ILKe88NeMt4gmDvk/eb615U/IVn7K9KWGkoYbdatQ69Z65nj1ZzjM6fHXfcs0Uge+e+EGnMW7DY4T9yko8vWFg==
-  dependencies:
-    ansi-escapes "^3.2.0"
-    cli-cursor "^2.1.0"
-    wrap-ansi "^5.0.0"
-
 logform@^2.1.1:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/logform/-/logform-2.1.2.tgz#957155ebeb67a13164069825ce67ddb5bb2dd360"
@@ -8724,10 +8715,10 @@ yargs@^13.3.0:
     y18n "^4.0.0"
     yargs-parser "^13.1.1"
 
-yarn@~1.21.0:
-  version "1.21.0"
-  resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.21.0.tgz#e0827d97a24f6714f1540cf2e8328b2e8eed682c"
-  integrity sha512-g9cvrdKXPZlz1eJYpKanQm3eywEmecudeyDkwiVWeswBrpHK3nJFBholkphHF9eNc8y/FNEhSQ8Et5ZAx4XyLw==
+yarn@~1.22.0:
+  version "1.22.0"
+  resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.22.0.tgz#acf82906e36bcccd1ccab1cfb73b87509667c881"
+  integrity sha512-KMHP/Jq53jZKTY9iTUt3dIVl/be6UPs2INo96+BnZHLKxYNTfwMmlgHTaMWyGZoO74RI4AIFvnWhYrXq2USJkg==
 
 yoga-layout-prebuilt@^1.9.3:
   version "1.9.3"

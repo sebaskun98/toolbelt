@@ -48,7 +48,7 @@ export const createIOContext = ({
   }
 }
 
-const mergeCustomOptionsWithDefault = (customOptions: InstanceOptions) => {
+export const mergeCustomOptionsWithDefault = (customOptions: InstanceOptions) => {
   const mergedOptions = { ...defaultOptions, ...customOptions }
   mergedOptions.headers = { ...defaultOptions.headers, ...customOptions.headers }
   return mergedOptions

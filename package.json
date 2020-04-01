@@ -65,6 +65,7 @@
     "diff": "~3.5.0",
     "emojic": "^1.1.15",
     "enquirer": "~2.3.2",
+    "env-paths": "^2.2.0",
     "eventsource": "~1.0.7",
     "extendable-error": "~0.1.5",
     "findhelp": "~1.1.0",

@@ -1,18 +1,17 @@
+import { spawn } from 'child_process'
 import { randomBytes } from 'crypto'
 import { ensureFile, writeJson } from 'fs-extra'
-import { spawn } from 'child_process'
 import { join } from 'path'
-
 import * as pkgJson from '../../../package.json'
-import { ErrorReport } from '../error/ErrorReport'
-import { ITelemetryLocalStore, TelemetryLocalStore } from './TelemetryStore'
-import { configDir } from '../../conf'
+import { PathConstants } from '../PathConstants'
 import logger from '../../logger'
+import { ErrorReport } from '../error/ErrorReport'
 import { Metric, MetricReport } from '../metrics/MetricReport'
+import { ITelemetryLocalStore, TelemetryLocalStore } from './TelemetryStore'
 
 export class TelemetryCollector {
   private static readonly REMOTE_FLUSH_INTERVAL = 1000 * 60 * 10 // Ten minutes
-  public static readonly TELEMETRY_LOCAL_DIR = join(configDir, 'vtex', 'telemetry')
+  public static readonly TELEMETRY_LOCAL_DIR = PathConstants.TELEMETRY_FOLDER
   private static telemetryCollectorSingleton: TelemetryCollector
 
   public static getCollector() {
